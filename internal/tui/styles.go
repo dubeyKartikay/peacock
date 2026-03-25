@@ -1,0 +1,91 @@
+package tui
+
+import (
+	"strings"
+
+	"charm.land/lipgloss/v2"
+
+	appconfig "peacock/internal/config"
+	"peacock/internal/logs"
+)
+
+const (
+	barVerticalPadding   = 0
+	barHorizontalPadding = 1
+)
+
+type styles struct {
+	panel      lipgloss.Style
+	status     lipgloss.Style
+	filterBar  lipgloss.Style
+	timestamp  lipgloss.Style
+	message    lipgloss.Style
+	caller     lipgloss.Style
+	context    lipgloss.Style
+	raw        lipgloss.Style
+	levelError lipgloss.Style
+	levelWarn  lipgloss.Style
+	levelInfo  lipgloss.Style
+	levelDebug lipgloss.Style
+	levelOther lipgloss.Style
+}
+
+func defaultStyles(cfg appconfig.ThemeConfig) styles {
+	borderColor := lipgloss.Color(cfg.PanelBorder)
+	return styles{
+		panel:      lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(borderColor),
+		status:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.StatusFG)).Background(lipgloss.Color(cfg.StatusBG)).Padding(barVerticalPadding, barHorizontalPadding),
+		filterBar:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.FilterFG)).Background(lipgloss.Color(cfg.FilterBG)).Padding(barVerticalPadding, barHorizontalPadding),
+		timestamp:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.TimestampFG)).Faint(cfg.TimestampFaint),
+		message:    lipgloss.NewStyle(),
+		caller:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.CallerFG)).Faint(cfg.CallerFaint),
+		context:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.ContextFG)).Faint(cfg.ContextFaint),
+		raw:        lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.RawFG)),
+		levelError: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelError)).Bold(cfg.LevelBold),
+		levelWarn:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelWarn)).Bold(cfg.LevelBold),
+		levelInfo:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelInfo)).Bold(cfg.LevelBold),
+		levelDebug: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelDebug)).Bold(cfg.LevelBold),
+		levelOther: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelOther)).Bold(cfg.LevelBold),
+	}
+}
+
+func (s styles) renderEntry(entry logs.Entry, width int) string {
+	parts := logs.TruncateParts(logs.FormatEntry(entry), width)
+	var builder strings.Builder
+	for _, part := range parts {
+		builder.WriteString(s.renderPart(part))
+	}
+	return builder.String()
+}
+
+func (s styles) renderPart(part logs.Part) string {
+	switch part.Kind {
+	case logs.PartTimestamp:
+		return s.timestamp.Render(part.Text)
+	case logs.PartLevel:
+		return s.levelStyle(part.Level).Render(part.Text)
+	case logs.PartCaller:
+		return s.caller.Render(part.Text)
+	case logs.PartContext:
+		return s.context.Render(part.Text)
+	case logs.PartRaw:
+		return s.raw.Render(part.Text)
+	default:
+		return s.message.Render(part.Text)
+	}
+}
+
+func (s styles) levelStyle(level string) lipgloss.Style {
+	switch level {
+	case "fatal", "error":
+		return s.levelError
+	case "warn":
+		return s.levelWarn
+	case "info":
+		return s.levelInfo
+	case "debug":
+		return s.levelDebug
+	default:
+		return s.levelOther
+	}
+}

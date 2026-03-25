@@ -1,0 +1,168 @@
+package tui
+
+import (
+	"strings"
+
+	"charm.land/bubbles/v2/textinput"
+	"charm.land/bubbles/v2/viewport"
+	tea "charm.land/bubbletea/v2"
+
+	appconfig "peacock/internal/config"
+	"peacock/internal/logs"
+)
+
+const (
+	filterInputHorizontalPadding = 4
+	minViewportDimension         = 1
+	panelHorizontalTrimWidth     = 4
+	panelVerticalTrimHeight      = 2
+	statusLineCount              = 1
+	filterLineCount              = 1
+	noResultIndex                = -1
+	viewportHorizontalTrimWidth  = 2
+	viewportPageDownKey          = "pgdown"
+	viewportPageDownAltKey       = "ctrl+f"
+	viewportPageUpKey            = "pgup"
+	viewportPageUpAltKey         = "ctrl+b"
+)
+
+type EntryMsg struct {
+	Entry logs.Entry
+}
+
+type SourceErrMsg struct {
+	Err error
+}
+
+type SourceDoneMsg struct{}
+
+type model struct {
+	sourceName         string
+	width              int
+	height             int
+	cfg                appconfig.Config
+	viewport           viewport.Model
+	filterInput        textinput.Model
+	styles             styles
+	entries            []logs.Entry
+	paused             bool
+	filterActive       bool
+	sourceDone         bool
+	sourceErr          error
+	pendingWhilePaused int
+	query              string
+}
+
+func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
+	input := textinput.New()
+	input.Prompt = cfg.Input.FilterPrompt
+	input.CharLimit = cfg.Input.FilterCharLimit
+	input.Placeholder = cfg.Input.FilterPlaceholder
+
+	vp := viewport.New()
+	vp.KeyMap.PageDown.SetKeys(viewportPageDownKey, viewportPageDownAltKey)
+	vp.KeyMap.PageUp.SetKeys(viewportPageUpKey, viewportPageUpAltKey)
+
+	return model{
+		sourceName:  sourceName,
+		cfg:         cfg,
+		viewport:    vp,
+		filterInput: input,
+		styles:      defaultStyles(cfg.Theme),
+	}
+}
+
+func (m model) Init() tea.Cmd {
+	return nil
+}
+
+func (m model) appendEntry(entry logs.Entry) model {
+	m.entries = append(m.entries, entry)
+	if len(m.entries) > m.cfg.Buffer.MaxEntries {
+		trim := len(m.entries) - m.cfg.Buffer.MaxEntries
+		m.entries = append([]logs.Entry(nil), m.entries[trim:]...)
+	}
+	return m
+}
+
+func (m model) filteredEntryIndexes() []int {
+	if m.query == "" {
+		return []int{}
+	}
+
+	filtered := make([]int, 0, len(m.entries))
+	for index, entry := range m.entries {
+		if strings.Contains(entry.Search, m.query) {
+			filtered = append(filtered, index)
+		}
+	}
+	if len(filtered) == 0 {
+		return []int{noResultIndex}
+	}
+
+	return filtered
+}
+
+func (m model) contentLines() []string {
+	width := max(minViewportDimension, m.width-panelHorizontalTrimWidth)
+	if m.query == "" {
+		lines := make([]string, 0, len(m.entries))
+		for _, entry := range m.entries {
+			lines = append(lines, m.styles.renderEntry(entry, width))
+		}
+		return lines
+	}
+
+	entryIndexes := m.filteredEntryIndexes()
+	if isNoResultFilter(entryIndexes) {
+		return nil
+	}
+
+	lines := make([]string, 0, len(entryIndexes))
+	for _, index := range entryIndexes {
+		lines = append(lines, m.styles.renderEntry(m.entries[index], width))
+	}
+	return lines
+}
+
+func (m model) visibleEntryCount() int {
+	if m.query == "" {
+		return len(m.entries)
+	}
+
+	indexes := m.filteredEntryIndexes()
+	if isNoResultFilter(indexes) {
+		return 0
+	}
+
+	return len(indexes)
+}
+
+func isNoResultFilter(indexes []int) bool {
+	return len(indexes) == 1 && indexes[0] == noResultIndex
+}
+
+func (m model) syncViewport(stickBottom bool) model {
+	contentHeight := m.contentHeight()
+	contentWidth := max(minViewportDimension, m.width-viewportHorizontalTrimWidth)
+
+	m.viewport.SetWidth(contentWidth)
+	m.viewport.SetHeight(contentHeight)
+	m.filterInput.SetWidth(max(minViewportDimension, m.width-filterInputHorizontalPadding))
+	m.viewport.SetContent(strings.Join(m.contentLines(), "\n"))
+
+	if stickBottom {
+		m.viewport.GotoBottom()
+	}
+	return m
+}
+
+func (m model) contentHeight() int {
+	height := m.height
+	filterLines := 0
+	if m.filterActive {
+		filterLines = filterLineCount
+	}
+	height -= statusLineCount + filterLines + panelVerticalTrimHeight
+	return max(minViewportDimension, height)
+}
