@@ -158,11 +158,18 @@ func (m model) syncViewport(stickBottom bool) model {
 }
 
 func (m model) contentHeight() int {
-	height := m.height
 	filterLines := 0
 	if m.filterActive {
 		filterLines = filterLineCount
 	}
-	height -= statusLineCount + filterLines + panelVerticalTrimHeight
+	if !m.cfg.Source.FileFollow {
+		total := 0
+		for _, e := range m.entries {
+			total += e.ContentHeight()
+		}
+		maxHeight := max(minViewportDimension, m.height-filterLines-panelVerticalTrimHeight)
+		return max(minViewportDimension, min(total, maxHeight))
+	}
+	height := m.height - statusLineCount - filterLines - panelVerticalTrimHeight
 	return max(minViewportDimension, height)
 }

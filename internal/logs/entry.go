@@ -11,6 +11,10 @@ type Entry struct {
 	Search    string
 }
 
+func (e Entry) ContentHeight() int {
+	return 1
+}
+
 type Field struct {
 	Key   string
 	Value string

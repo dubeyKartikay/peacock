@@ -32,7 +32,8 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case SourceDoneMsg:
 		m.sourceDone = true
-		if(!m.cfg.Source.FileFollow){
+		if !m.cfg.Source.FileFollow {
+			m = m.syncViewport(true)
 			return m, tea.Quit
 		}
 		return m, nil

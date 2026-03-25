@@ -28,8 +28,12 @@ func (m model) View() tea.View {
 	}
 
 	panel := m.styles.panel.Render(m.viewport.View())
-	status := m.renderStatus()
 
+	if !m.cfg.Source.FileFollow {
+		return tea.View{Content: panel}
+	}
+
+	status := m.renderStatus()
 	parts := []string{panel, status}
 	if m.filterActive {
 		parts = append(parts, m.styles.filterBar.Render(m.filterInput.View()))
