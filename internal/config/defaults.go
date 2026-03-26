@@ -24,22 +24,22 @@ const (
 	defaultFilePoll                  = true
 	defaultFileReopen                = false
 	defaultPanelBorder               = "8"
-	defaultStatusFG                  = "252"
-	defaultFilterFG                  = "230"
-	defaultFilterBG                  = "238"
-	defaultTimestampFG               = "245"
+	defaultStatusFG                  = "7"
+	defaultFilterFG                  = "15"
+	defaultFilterBG                  = "8"
+	defaultTimestampFG               = "7"
 	defaultTimestampFaint            = true
 	defaultMessageFG                 = "15"
 	defaultCallerFG                  = "4"
 	defaultCallerFaint               = false
 	defaultContextFG                 = "5"
 	defaultContextFaint              = false
-	defaultRawFG                     = "252"
-	defaultLevelError                = "204"
-	defaultLevelWarn                 = "221"
-	defaultLevelInfo                 = "78"
-	defaultLevelDebug                = "81"
-	defaultLevelOther                = "250"
+	defaultRawFG                     = "7"
+	defaultLevelError                = "9"
+	defaultLevelWarn                 = "11"
+	defaultLevelInfo                 = "10"
+	defaultLevelDebug                = "14"
+	defaultLevelOther                = "7"
 	defaultLevelBold                 = true
 )
 

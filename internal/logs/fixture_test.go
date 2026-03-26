@@ -9,7 +9,7 @@ import (
 )
 
 func TestRedactedFixtureStaysParseable(t *testing.T) {
-	path := filepath.Join("..", "..", "testdata", "lazyspotify_redacted.log")
+	path := filepath.Join("..", "..", "testdata", "dummy.log")
 	file, err := os.Open(path)
 	if err != nil {
 		t.Fatalf("open fixture: %v", err)
@@ -45,7 +45,7 @@ func TestRedactedFixtureStaysParseable(t *testing.T) {
 }
 
 func TestFixtureSupportsFilteringTerms(t *testing.T) {
-	path := filepath.Join("..", "..", "testdata", "lazyspotify_redacted.log")
+	path := filepath.Join("..", "..", "testdata", "dummy.log")
 	data, err := os.ReadFile(path)
 	if err != nil {
 		t.Fatalf("read fixture: %v", err)

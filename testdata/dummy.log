@@ -1,0 +1,8 @@
+{"level":"debug","time":"2026-03-24T03:46:39+05:30","caller":"core/logger/logger.go:13","message":"logger initialized"}
+{"level":"debug","time":"2026-03-24T03:46:39+05:30","caller":"core/logger/logger.go:14","message":"config directory: [CONFIG_DIR]"}
+{"level":"debug","access_token":"[REDACTED]","time":"2026-03-24T03:46:39+05:30","caller":"core/auth/auth.go:31","message":"token from keyring"}
+{"level":"info","time":"2026-03-24T03:46:40+05:30","caller":"core/deamon/deamon_manager.go:34","message":"starting daemon"}
+{"level":"debug","url":"http://127.0.0.1:4041/","time":"2026-03-24T03:46:40+05:30","caller":"librespot/api_client.go:58","message":"requesting health"}
+{"level":"error","error":"exit status 1","time":"2026-03-24T03:46:44+05:30","caller":"core/deamon/deamon_manager.go:66","message":"daemon error: restartOnFailure:true restartCount:0"}
+{"level":"warn","time":"2026-03-24T03:46:44+05:30","caller":"core/deamon/deamon_manager.go:91","message":"force killing process"}
+{"level":"error","error":"Get \"https://api.spotify.com/v1/me\": oauth2: \"invalid_grant\" \"Refresh token revoked\"","time":"2026-03-24T21:55:32+05:30","caller":"spotify/client.go:32","message":"error getting user id"}

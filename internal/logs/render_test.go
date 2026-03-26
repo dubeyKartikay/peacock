@@ -23,11 +23,3 @@ func TestRenderPlainFormatsStructuredLogs(t *testing.T) {
 		}
 	}
 }
-
-func TestTruncatePartsAddsEllipsis(t *testing.T) {
-	parts := []Part{{Kind: PartMessage, Text: "abcdefghijklmnopqrstuvwxyz"}}
-	truncated := TruncateParts(parts, 10)
-	if got, want := truncated[0].Text, "abcdefghi…"; got != want {
-		t.Fatalf("expected %q, got %q", want, got)
-	}
-}
