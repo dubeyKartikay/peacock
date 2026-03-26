@@ -167,7 +167,7 @@ func (m model) totalHeight() int {
 		for _, e := range m.entries {
 			total += e.ContentHeight()
 		}
-		maxHeight := max(minViewportDimension, m.height)
+		maxHeight := max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
 		return max(minViewportDimension, min(total, maxHeight))
 	}
 	height := m.height - statusLineCount - filterLines - m.styles.panel.GetVerticalFrameSize()

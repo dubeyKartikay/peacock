@@ -36,6 +36,7 @@ type ThemeConfig struct {
 	FilterBG       string `mapstructure:"filter_bg"`
 	TimestampFG    string `mapstructure:"timestamp_fg"`
 	TimestampFaint bool   `mapstructure:"timestamp_faint"`
+	MessageFG      string `mapstructure:"message_fg"`
 	CallerFG       string `mapstructure:"caller_fg"`
 	CallerFaint    bool   `mapstructure:"caller_faint"`
 	ContextFG      string `mapstructure:"context_fg"`
@@ -69,11 +70,11 @@ func DefaultConfig() Config {
 		Theme: ThemeConfig{
 			PanelBorder:    defaultPanelBorder,
 			StatusFG:       defaultStatusFG,
-			StatusBG:       defaultStatusBG,
 			FilterFG:       defaultFilterFG,
 			FilterBG:       defaultFilterBG,
 			TimestampFG:    defaultTimestampFG,
 			TimestampFaint: defaultTimestampFaint,
+			MessageFG:      defaultMessageFG,
 			CallerFG:       defaultCallerFG,
 			CallerFaint:    defaultCallerFaint,
 			ContextFG:      defaultContextFG,

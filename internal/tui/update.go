@@ -95,6 +95,7 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		m.filterActive = true
 		m.filterInput.SetValue(m.query)
 		m.filterInput.CursorEnd()
+		m = m.syncViewport(false)
 		cmd := m.filterInput.Focus()
 		return m, cmd
 	case keyGoToTop:

@@ -1,6 +1,9 @@
 package tui
 
-import "unicode/utf8"
+import (
+	"github.com/muesli/reflow/truncate"
+	"charm.land/lipgloss/v2"
+)
 
 const ellipsis = "…"
 
@@ -8,13 +11,11 @@ func truncateText(text string, maxWidth int) string {
 	if maxWidth <= 0 {
 		return ""
 	}
-	if utf8.RuneCountInString(text) <= maxWidth {
+	if lipgloss.Width(text) <= maxWidth {
 		return text
 	}
 	if maxWidth == minViewportDimension {
 		return ellipsis
 	}
-
-	runes := []rune(text)
-	return string(runes[:maxWidth-1]) + ellipsis
+	return truncate.StringWithTail(text, uint(maxWidth), ellipsis)
 }

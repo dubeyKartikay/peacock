@@ -10,11 +10,12 @@ import (
 const (
 	barVerticalPadding   = 0
 	barHorizontalPadding = 1
+	generalPadding = 1
 )
 
 type styles struct {
 	panel      lipgloss.Style
-	status     lipgloss.Style
+	status     statusStyles
 	filterBar  lipgloss.Style
 	timestamp  lipgloss.Style
 	message    lipgloss.Style
@@ -28,14 +29,26 @@ type styles struct {
 	levelOther lipgloss.Style
 }
 
+type statusStyles struct {
+	bar     lipgloss.Style
+	live    lipgloss.Style
+	paused  lipgloss.Style
+	done    lipgloss.Style
+	source  lipgloss.Style
+	entries lipgloss.Style
+	visible    lipgloss.Style
+	err     lipgloss.Style
+	help    lipgloss.Style
+}
+
 func defaultStyles(cfg appconfig.ThemeConfig) styles {
 	borderColor := lipgloss.Color(cfg.PanelBorder)
 	return styles{
-		panel:      lipgloss.NewStyle().Border(lipgloss.NormalBorder()).BorderForeground(borderColor),
-		status:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.StatusFG)).Background(lipgloss.Color(cfg.StatusBG)).Padding(barVerticalPadding, barHorizontalPadding),
-		filterBar:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.FilterFG)).Background(lipgloss.Color(cfg.FilterBG)).Padding(barVerticalPadding, barHorizontalPadding),
+		panel:      lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(borderColor),
+		status:     defaultStatusStyles(cfg),
+		filterBar:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.FilterFG)).Padding(barVerticalPadding, barHorizontalPadding),
 		timestamp:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.TimestampFG)).Faint(cfg.TimestampFaint),
-		message:    lipgloss.NewStyle(),
+		message:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.MessageFG)),
 		caller:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.CallerFG)).Faint(cfg.CallerFaint),
 		context:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.ContextFG)).Faint(cfg.ContextFaint),
 		raw:        lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.RawFG)),
@@ -44,6 +57,19 @@ func defaultStyles(cfg appconfig.ThemeConfig) styles {
 		levelInfo:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelInfo)).Bold(cfg.LevelBold),
 		levelDebug: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelDebug)).Bold(cfg.LevelBold),
 		levelOther: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelOther)).Bold(cfg.LevelBold),
+	}
+}
+
+func defaultStatusStyles(cfg appconfig.ThemeConfig) statusStyles {
+	return statusStyles{
+		bar :    lipgloss.NewStyle().Padding(barVerticalPadding, barHorizontalPadding),
+		live:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelError)),
+		paused:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelWarn)).PaddingRight(generalPadding),
+		done:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelOther)).PaddingRight(generalPadding),
+		source:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.CallerFG)).PaddingRight(generalPadding),
+		entries: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.StatusFG)).PaddingRight(generalPadding),
+		help:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.StatusFG)).PaddingLeft(generalPadding).Faint(true),
+		err:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelError)).PaddingRight(generalPadding),
 	}
 }
 

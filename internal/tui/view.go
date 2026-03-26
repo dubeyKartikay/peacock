@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -12,11 +13,11 @@ const (
 	filterLabelFormat = "%s  filter:%q"
 	liveStateLabel    = "LIVE"
 	loadingText       = "Loading Peacock..."
-	pausedStateFormat = "PAUSED (+%d)"
+	pausedStateLabel = "PAUSED"
 	sourceLabelFormat = "%s  source:%s"
 	stateLabelFormat  = "%s  entries:%d  visible:%d"
 	statusErrorFormat = "%s  err:%s"
-	statusHelpText    = "Space pause  / filter  Esc clear  q quit"
+	statusHelpText    = "pause: space  quit: ctrl+c  filter: /"
 )
 
 func (m model) View() tea.View {
@@ -27,42 +28,53 @@ func (m model) View() tea.View {
 	panel := m.styles.panel.Render(m.viewport.View())
 
 	if !m.cfg.Source.FileFollow {
-		return tea.View{Content: panel}
+		return tea.View{Content: panel + "\n"}
 	}
 
 	status := m.renderStatus()
-	parts := []string{panel, status}
+	parts := []string{panel}
 	if m.filterActive {
 		parts = append(parts, m.styles.filterBar.Render(m.filterInput.View()))
 	}
-
-	return tea.View{Content: lipgloss.JoinVertical(lipgloss.Left, parts...)}
+	parts = append(parts, status)
+	return tea.View{Content: lipgloss.JoinVertical(lipgloss.Left, parts...,)}
 }
 
 func (m model) renderStatus() string {
-	state := liveStateLabel
-	if m.paused {
-		state = fmt.Sprintf(pausedStateFormat, m.pendingWhilePaused)
-	} else if m.sourceDone {
-		state = doneStateLabel
-	}
+	statusStyle := m.styles.status
 
-	left := fmt.Sprintf(stateLabelFormat, state, len(m.entries), m.visibleEntryCount())
-	if m.sourceName != "" {
-		left = fmt.Sprintf(sourceLabelFormat, left, m.sourceName)
+	state := statusStyle.live.Render(liveStateLabel)
+	if m.paused {
+		state = statusStyle.paused.Render(pausedStateLabel)
+	} else if m.sourceDone {
+		state = statusStyle.done.Render(doneStateLabel)
 	}
+	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d",m.visibleEntryCount(), len(m.entries)))
+	if m.sourceErr != nil {
+		entries = statusStyle.err.Render(entries)
+	}
+	state = statusStyle.source.Render(state)
+	var left string
+	if m.sourceName != "" {
+		source := statusStyle.source.Render(m.sourceName)
+		left = lipgloss.JoinHorizontal(lipgloss.Left, left, source)
+	}
+	left = lipgloss.JoinHorizontal(lipgloss.Left, state, left, entries)
+
 	if m.query != "" {
-		left = fmt.Sprintf(filterLabelFormat, left, m.query)
+		query := statusStyle.source.Render(m.query)
+		left = lipgloss.JoinHorizontal(lipgloss.Left, left, query)
 	}
 	if m.sourceErr != nil {
-		left = fmt.Sprintf(statusErrorFormat, left, m.sourceErr)
+		sourceErr := statusStyle.source.Render(m.sourceErr.Error())
+		left = lipgloss.JoinHorizontal(lipgloss.Left, left, sourceErr)
 	}
 
-	right := statusHelpText
-	contentWidth := max(minViewportDimension, m.width-m.styles.status.GetHorizontalFrameSize())
+	right := statusStyle.help.Render(statusHelpText)
+	contentWidth := max(minViewportDimension, m.width-statusStyle.bar.GetHorizontalFrameSize())
 	if lipgloss.Width(right) >= contentWidth {
 		right = truncateText(right, contentWidth)
-		return m.styles.status.Render(right)
+		return statusStyle.bar.Render(right)
 	}
 
 	leftWidth := contentWidth - lipgloss.Width(right)
@@ -70,8 +82,10 @@ func (m model) renderStatus() string {
 		right = truncateText(right, max(minViewportDimension, contentWidth/2))
 		leftWidth = max(minViewportDimension, contentWidth-lipgloss.Width(right)-1)
 	}
-	left = truncateText(left, leftWidth)
-	leftPart := lipgloss.NewStyle().Width(leftWidth).Render(left)
-
-	return m.styles.status.Render(lipgloss.JoinHorizontal(lipgloss.Top, leftPart, right))
+	if lipgloss.Width(left) > leftWidth {
+		left = truncateText(left, leftWidth)
+	}
+	centerPad := max(0,contentWidth - lipgloss.Width(left) - lipgloss.Width(right))
+	center := strings.Repeat(" ", centerPad)
+	return statusStyle.bar.Render(lipgloss.JoinHorizontal(lipgloss.Top, left,center, right))
 }
