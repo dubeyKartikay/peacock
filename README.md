@@ -1,5 +1,5 @@
 # Peacock
-<img src="./peacock.png"/>
+<img src="./peacock.png" style="max-width:500px;display:block;margin:auto"/>
 
 A charming `tail` replacement for developers who work with structured logs. Pipe your JSON log output into peacock and get colorized, readable, filterable log streams in the terminal.
 
