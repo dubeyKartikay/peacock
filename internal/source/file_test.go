@@ -18,6 +18,7 @@ func TestTailedFileSourceReceivesAppendedLines(t *testing.T) {
 
 	cfg := appconfig.DefaultConfig()
 	cfg.Source.FilePoll = true
+	cfg.Source.FileTailLines = 0
 	src, err := NewTailedFileSource(path, cfg.Source)
 	if err != nil {
 		t.Fatalf("new tailed file source: %v", err)

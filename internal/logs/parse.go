@@ -11,12 +11,12 @@ import (
 
 const (
 	boolFalseValue    = false
-	levelFatal        = "FATAL"
-	levelError        = "ERROR"
-	levelWarn         = "WARN"
-	levelWarning      = "WARNING"
-	levelInfo         = "INFO"
-	levelDebug        = "DEBUG"
+	levelFatal        = "fatal"
+	levelError        = "error"
+	levelWarn         = "warn"
+	levelWarning      = "warning"
+	levelInfo         = "info"
+	levelDebug        = "debug"
 	lineJoinSeparator = " "
 	nullValue         = "NULL"
 	searchQuoteChars  = " \t\n\r\""

@@ -156,8 +156,8 @@ func getPositionOfNthLineFromEnd(file *os.File, n int) (int64,error) {
 	if err != nil {
 		return 0, err
 	}
-	if size == 0 {
-		return 0, nil
+	if size == 0 || n == 0 {
+		return size, nil
 	}
 
 	// Skip a trailing newline so it doesn't count as an extra empty line.

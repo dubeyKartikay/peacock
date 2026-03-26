@@ -2,7 +2,6 @@ package tui
 
 import (
 	"fmt"
-	"strings"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -11,7 +10,6 @@ import (
 const (
 	doneStateLabel    = "DONE"
 	filterLabelFormat = "%s  filter:%q"
-	gapMinWidth       = 1
 	liveStateLabel    = "LIVE"
 	loadingText       = "Loading Peacock..."
 	pausedStateFormat = "PAUSED (+%d)"
@@ -19,7 +17,6 @@ const (
 	stateLabelFormat  = "%s  entries:%d  visible:%d"
 	statusErrorFormat = "%s  err:%s"
 	statusHelpText    = "Space pause  / filter  Esc clear  q quit"
-	viewJoinSeparator = "\n"
 )
 
 func (m model) View() tea.View {
@@ -39,7 +36,7 @@ func (m model) View() tea.View {
 		parts = append(parts, m.styles.filterBar.Render(m.filterInput.View()))
 	}
 
-	return tea.View{Content: strings.Join(parts, viewJoinSeparator)}
+	return tea.View{Content: lipgloss.JoinVertical(lipgloss.Left, parts...)}
 }
 
 func (m model) renderStatus() string {
@@ -62,23 +59,19 @@ func (m model) renderStatus() string {
 	}
 
 	right := statusHelpText
-	contentWidth := max(minViewportDimension, m.width-viewportHorizontalTrimWidth)
+	contentWidth := max(minViewportDimension, m.width-m.styles.status.GetHorizontalFrameSize())
 	if lipgloss.Width(right) >= contentWidth {
 		right = truncateText(right, contentWidth)
 		return m.styles.status.Render(right)
 	}
 
-	maxLeftWidth := contentWidth - lipgloss.Width(right) - 1
-	if maxLeftWidth < minViewportDimension {
+	leftWidth := contentWidth - lipgloss.Width(right)
+	if leftWidth < minViewportDimension {
 		right = truncateText(right, max(minViewportDimension, contentWidth/2))
-		maxLeftWidth = max(minViewportDimension, contentWidth-lipgloss.Width(right)-gapMinWidth)
+		leftWidth = max(minViewportDimension, contentWidth-lipgloss.Width(right)-1)
 	}
-	left = truncateText(left, maxLeftWidth)
+	left = truncateText(left, leftWidth)
+	leftPart := lipgloss.NewStyle().Width(leftWidth).Render(left)
 
-	gap := contentWidth - lipgloss.Width(left) - lipgloss.Width(right)
-	if gap < gapMinWidth {
-		gap = gapMinWidth
-	}
-
-	return m.styles.status.Render(left + strings.Repeat(" ", gap) + right)
+	return m.styles.status.Render(lipgloss.JoinHorizontal(lipgloss.Top, leftPart, right))
 }

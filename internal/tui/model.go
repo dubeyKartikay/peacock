@@ -12,18 +12,14 @@ import (
 )
 
 const (
-	filterInputHorizontalPadding = 4
-	minViewportDimension         = 1
-	panelHorizontalTrimWidth     = 4
-	panelVerticalTrimHeight      = 2
-	statusLineCount              = 1
-	filterLineCount              = 1
-	noResultIndex                = -1
-	viewportHorizontalTrimWidth  = 2
-	viewportPageDownKey          = "pgdown"
-	viewportPageDownAltKey       = "ctrl+f"
-	viewportPageUpKey            = "pgup"
-	viewportPageUpAltKey         = "ctrl+b"
+	minViewportDimension   = 1
+	statusLineCount        = 1
+	filterLineCount        = 1
+	noResultIndex          = -1
+	viewportPageDownKey    = "pgdown"
+	viewportPageDownAltKey = "ctrl+f"
+	viewportPageUpKey      = "pgup"
+	viewportPageUpAltKey   = "ctrl+b"
 )
 
 type EntryMsg struct {
@@ -104,7 +100,7 @@ func (m model) filteredEntryIndexes() []int {
 }
 
 func (m model) contentLines() []string {
-	width := max(minViewportDimension, m.width-panelHorizontalTrimWidth)
+	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize()-2)
 	if m.query == "" {
 		lines := make([]string, 0, len(m.entries))
 		for _, entry := range m.entries {
@@ -144,11 +140,11 @@ func isNoResultFilter(indexes []int) bool {
 
 func (m model) syncViewport(stickBottom bool) model {
 	contentHeight := m.contentHeight()
-	contentWidth := max(minViewportDimension, m.width-viewportHorizontalTrimWidth)
+	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 
 	m.viewport.SetWidth(contentWidth)
 	m.viewport.SetHeight(contentHeight)
-	m.filterInput.SetWidth(max(minViewportDimension, m.width-filterInputHorizontalPadding))
+	m.filterInput.SetWidth(max(minViewportDimension, m.width-m.styles.filterBar.GetHorizontalFrameSize()-2))
 	m.viewport.SetContent(strings.Join(m.contentLines(), "\n"))
 
 	if stickBottom {
@@ -167,9 +163,9 @@ func (m model) contentHeight() int {
 		for _, e := range m.entries {
 			total += e.ContentHeight()
 		}
-		maxHeight := max(minViewportDimension, m.height-filterLines-panelVerticalTrimHeight)
+		maxHeight := max(minViewportDimension, m.height)
 		return max(minViewportDimension, min(total, maxHeight))
 	}
-	height := m.height - statusLineCount - filterLines - panelVerticalTrimHeight
+	height := m.height - statusLineCount - filterLines - m.styles.panel.GetVerticalFrameSize()
 	return max(minViewportDimension, height)
 }

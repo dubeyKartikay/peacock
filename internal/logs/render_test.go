@@ -11,7 +11,7 @@ func TestRenderPlainFormatsStructuredLogs(t *testing.T) {
 	plain := RenderPlain(entry)
 	checks := []string{
 		"2026-03-25T12:00:00Z ",
-		"[ERROR] ",
+		"[error] ",
 		"request failed",
 		" caller=api.go:88",
 		" status=503",

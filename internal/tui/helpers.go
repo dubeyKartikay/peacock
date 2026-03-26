@@ -16,5 +16,5 @@ func truncateText(text string, maxWidth int) string {
 	}
 
 	runes := []rune(text)
-	return string(runes[:maxWidth-gapMinWidth]) + ellipsis
+	return string(runes[:maxWidth-1]) + ellipsis
 }
