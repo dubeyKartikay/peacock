@@ -6,6 +6,7 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 
 	appconfig "peacock/internal/config"
 	"peacock/internal/logs"
@@ -103,8 +104,10 @@ func (m model) contentLines() []string {
 	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize()-2)
 	if m.query == "" {
 		lines := make([]string, 0, len(m.entries))
-		for _, entry := range m.entries {
-			lines = append(lines, m.styles.renderEntry(entry, width))
+		for index := range m.entries {
+			rendered, renderedHeight := m.styles.renderEntry(m.entries[index], width)
+			m.entries[index].SetRenderHeight(renderedHeight) 
+			lines = append(lines, rendered)
 		}
 		return lines
 	}
@@ -116,7 +119,9 @@ func (m model) contentLines() []string {
 
 	lines := make([]string, 0, len(entryIndexes))
 	for _, index := range entryIndexes {
-		lines = append(lines, m.styles.renderEntry(m.entries[index], width))
+		rendered, renderedHeight := m.styles.renderEntry(m.entries[index], width)
+		m.entries[index].SetRenderHeight(renderedHeight) 
+		lines = append(lines, rendered)
 	}
 	return lines
 }
@@ -139,21 +144,20 @@ func isNoResultFilter(indexes []int) bool {
 }
 
 func (m model) syncViewport(stickBottom bool) model {
-	contentHeight := m.contentHeight()
+	content := m.contentLines()
+	contentHeight := m.totalHeight()
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
-
 	m.viewport.SetWidth(contentWidth)
 	m.viewport.SetHeight(contentHeight)
 	m.filterInput.SetWidth(max(minViewportDimension, m.width-m.styles.filterBar.GetHorizontalFrameSize()-2))
-	m.viewport.SetContent(strings.Join(m.contentLines(), "\n"))
-
+	m.viewport.SetContent(lipgloss.JoinVertical(lipgloss.Left, content...))
 	if stickBottom {
 		m.viewport.GotoBottom()
 	}
 	return m
 }
 
-func (m model) contentHeight() int {
+func (m model) totalHeight() int {
 	filterLines := 0
 	if m.filterActive {
 		filterLines = filterLineCount
@@ -168,4 +172,12 @@ func (m model) contentHeight() int {
 	}
 	height := m.height - statusLineCount - filterLines - m.styles.panel.GetVerticalFrameSize()
 	return max(minViewportDimension, height)
+}
+
+func (m model) contentHeight() int {
+	total := 0
+	for _, e := range m.entries {
+		total += e.ContentHeight()
+	}
+	return total
 }

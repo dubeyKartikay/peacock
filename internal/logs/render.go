@@ -3,7 +3,8 @@ package logs
 import (
 	"fmt"
 	"strings"
-	"unicode/utf8"
+	"charm.land/lipgloss/v2"
+	"github.com/muesli/reflow/wordwrap"
 )
 
 const (
@@ -66,61 +67,32 @@ func renderContext(fields []Field) string {
 	return strings.Join(parts, contextSeparator)
 }
 
-func TruncateParts(parts []Part, maxWidth int) []Part {
-	if maxWidth <= 0 {
-		return nil
-	}
-
-	totalWidth := 0
-	for _, part := range parts {
-		totalWidth += utf8.RuneCountInString(part.Text)
-	}
-	if totalWidth <= maxWidth {
-		return parts
-	}
-
-	truncated := make([]Part, 0, len(parts))
-	remaining := maxWidth
-	for _, part := range parts {
-		width := utf8.RuneCountInString(part.Text)
-		switch {
-		case remaining <= 0:
-			break
-		case width < remaining:
-			truncated = append(truncated, part)
-			remaining -= width
-		default:
-			text := truncateString(part.Text, remaining)
-			if text != "" {
-				truncated = append(truncated, Part{Kind: part.Kind, Text: text, Level: part.Level})
-			}
-			remaining = 0
-		}
-		if remaining == 0 {
-			break
-		}
-	}
-
-	if len(truncated) == 0 {
-		return []Part{{Kind: PartRaw, Text: truncateString("", maxWidth)}}
-	}
-	return truncated
-}
-
-func truncateString(text string, maxWidth int) string {
+func WrapHorizontalOverflow(logMetadata string, content string, maxWidth int) string {
 	if maxWidth <= 0 {
 		return ""
 	}
-	if utf8.RuneCountInString(text) <= maxWidth {
+
+	totalWidth := lipgloss.Width(logMetadata) + lipgloss.Width(content)
+
+	if totalWidth <= maxWidth {
+		return lipgloss.JoinHorizontal(lipgloss.Left, logMetadata, content)
+	}
+	if (lipgloss.Width(logMetadata)) <= maxWidth {
+		wrappedContent := wrapString(content, maxWidth-lipgloss.Width(logMetadata))
+		return lipgloss.JoinHorizontal(lipgloss.Left, logMetadata, wrappedContent)
+	}
+	tuncatedLine := wrapString(lipgloss.JoinHorizontal(lipgloss.Left, logMetadata, content), maxWidth)
+	return tuncatedLine
+
+}
+
+func wrapString(text string, maxWidth int) string {
+	if maxWidth <= 0 {
+		return ""
+	}
+	if lipgloss.Width(text) <= maxWidth {
 		return text
 	}
-	if maxWidth == 1 {
-		return ellipsis
-	}
-
-	runes := []rune(text)
-	if len(runes) >= maxWidth {
-		return string(runes[:maxWidth-1]) + ellipsis
-	}
-	return string(runes)
+	text = wordwrap.String(text, maxWidth)
+	return text
 }

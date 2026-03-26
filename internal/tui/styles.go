@@ -1,8 +1,6 @@
 package tui
 
 import (
-	"strings"
-
 	"charm.land/lipgloss/v2"
 
 	appconfig "peacock/internal/config"
@@ -49,13 +47,19 @@ func defaultStyles(cfg appconfig.ThemeConfig) styles {
 	}
 }
 
-func (s styles) renderEntry(entry logs.Entry, width int) string {
-	parts := logs.TruncateParts(logs.FormatEntry(entry), width)
-	var builder strings.Builder
+func (s styles) renderEntry(entry logs.Entry, width int) (string,int) {
+	parts := logs.FormatEntry(entry)
+	logMetadata := ""
+	content := ""
 	for _, part := range parts {
-		builder.WriteString(s.renderPart(part))
+		if(part.Kind == logs.PartTimestamp || part.Kind == logs.PartLevel) {
+			logMetadata = lipgloss.JoinHorizontal(lipgloss.Left, logMetadata, s.renderPart(part))
+		}else{
+			content = lipgloss.JoinHorizontal(lipgloss.Left, content, s.renderPart(part))
+		}
 	}
-	return builder.String()
+	view := logs.WrapHorizontalOverflow(logMetadata, content, width)
+	return view, lipgloss.Height(view)
 }
 
 func (s styles) renderPart(part logs.Part) string {

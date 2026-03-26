@@ -9,10 +9,15 @@ type Entry struct {
 	Caller    string
 	Context   []Field
 	Search    string
+	renderHeight int
 }
 
 func (e Entry) ContentHeight() int {
-	return 1
+	return e.renderHeight
+}
+
+func (e *Entry) SetRenderHeight(height int) {
+	e.renderHeight = height
 }
 
 type Field struct {
