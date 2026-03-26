@@ -19,7 +19,7 @@ type Options struct {
 }
 
 func Run(options Options) error {
-	src, err := source.Open(options.InputPath, options.Stdin, options.Config)
+	src, err := source.Open(options.InputPath, options.Stdin, &options.Config)
 	if err != nil {
 		return err
 	}

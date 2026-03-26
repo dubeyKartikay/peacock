@@ -24,7 +24,7 @@ type Source interface {
 	Close() error
 }
 
-func Open(inputPath string, stdin *os.File, cfg appconfig.Config) (Source, error) {
+func Open(inputPath string, stdin *os.File, cfg *appconfig.Config) (Source, error) {
 	if inputPath != "" {
 		if cfg.Source.FileFollow {
 			return NewTailedFileSource(inputPath, cfg.Source)
@@ -33,6 +33,7 @@ func Open(inputPath string, stdin *os.File, cfg appconfig.Config) (Source, error
 	}
 
 	if stdin != nil && !term.IsTerminal(int(stdin.Fd())) {
+		cfg.Source.FileFollow = true
 		return NewStdinSource(stdin, cfg.Input), nil
 	}
 
