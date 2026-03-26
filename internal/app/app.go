@@ -2,6 +2,7 @@ package app
 
 import (
 	"os"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
 
@@ -25,7 +26,11 @@ func Run(options Options) error {
 	defer src.Close()
 
 	model := tui.NewModel(src.Name(), options.Config)
-	program := tea.NewProgram(model)
+	programOptions := []tea.ProgramOption{}
+	if options.InputPath != "" && !options.Config.Source.FileFollow {
+		programOptions = append(programOptions, tea.WithEnvironment(nonQueryEnvironment(os.Environ())))
+	}
+	program := tea.NewProgram(model, programOptions...)
 
 	go func() {
 		for event := range src.Events() {
@@ -45,4 +50,24 @@ func Run(options Options) error {
 	}
 
 	return nil
+}
+
+func nonQueryEnvironment(base []string) []string {
+	env := make([]string, 0, len(base)+2)
+	for _, variable := range base {
+		if strings.HasPrefix(variable, "TERM=") ||
+			strings.HasPrefix(variable, "TERM_PROGRAM=") ||
+			strings.HasPrefix(variable, "WT_SESSION=") ||
+			strings.HasPrefix(variable, "SSH_TTY=") {
+			continue
+		}
+		env = append(env, variable)
+	}
+
+	env = append(env,
+		"TERM=xterm-256color",
+		"TERM_PROGRAM=Apple_Terminal",
+	)
+
+	return env
 }
