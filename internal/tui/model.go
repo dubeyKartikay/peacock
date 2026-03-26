@@ -41,12 +41,12 @@ type model struct {
 	viewport           viewport.Model
 	filterInput        textinput.Model
 	styles             styles
-	entries            []logs.Entry
+	visibleEntries     []logs.Entry
+  queuedEntries      []logs.Entry
 	paused             bool
 	filterActive       bool
 	sourceDone         bool
 	sourceErr          error
-	pendingWhilePaused int
 	query              string
 }
 
@@ -73,11 +73,20 @@ func (m model) Init() tea.Cmd {
 	return nil
 }
 
-func (m model) appendEntry(entry logs.Entry) model {
-	m.entries = append(m.entries, entry)
-	if len(m.entries) > m.cfg.Buffer.MaxEntries {
-		trim := len(m.entries) - m.cfg.Buffer.MaxEntries
-		m.entries = append([]logs.Entry(nil), m.entries[trim:]...)
+func (m model) appendEntry(entries ...logs.Entry) model {
+	m.visibleEntries = append(m.visibleEntries, entries...)
+	if len(m.visibleEntries) > m.cfg.Buffer.MaxEntries {
+		trim := len(m.visibleEntries) - m.cfg.Buffer.MaxEntries
+		m.visibleEntries = append([]logs.Entry(nil), m.visibleEntries[trim:]...)
+	}
+	return m
+}
+
+func (m model) queueEntry(entry logs.Entry) model {
+	m.queuedEntries = append(m.queuedEntries, entry)
+	if len(m.queuedEntries) > m.cfg.Buffer.MaxEntries {
+		trim := len(m.queuedEntries) - m.cfg.Buffer.MaxEntries
+		m.queuedEntries = append([]logs.Entry(nil), m.queuedEntries[trim:]...)
 	}
 	return m
 }
@@ -87,8 +96,8 @@ func (m model) filteredEntryIndexes() []int {
 		return []int{}
 	}
 
-	filtered := make([]int, 0, len(m.entries))
-	for index, entry := range m.entries {
+	filtered := make([]int, 0, len(m.visibleEntries))
+	for index, entry := range m.visibleEntries {
 		if strings.Contains(entry.Search, m.query) {
 			filtered = append(filtered, index)
 		}
@@ -103,10 +112,10 @@ func (m model) filteredEntryIndexes() []int {
 func (m model) contentLines() []string {
 	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize()-2)
 	if m.query == "" {
-		lines := make([]string, 0, len(m.entries))
-		for index := range m.entries {
-			rendered, renderedHeight := m.styles.renderEntry(m.entries[index], width)
-			m.entries[index].SetRenderHeight(renderedHeight) 
+		lines := make([]string, 0, len(m.visibleEntries))
+		for index := range m.visibleEntries {
+			rendered, renderedHeight := m.styles.renderEntry(m.visibleEntries[index], width)
+			m.visibleEntries[index].SetRenderHeight(renderedHeight) 
 			lines = append(lines, rendered)
 		}
 		return lines
@@ -119,8 +128,8 @@ func (m model) contentLines() []string {
 
 	lines := make([]string, 0, len(entryIndexes))
 	for _, index := range entryIndexes {
-		rendered, renderedHeight := m.styles.renderEntry(m.entries[index], width)
-		m.entries[index].SetRenderHeight(renderedHeight) 
+		rendered, renderedHeight := m.styles.renderEntry(m.visibleEntries[index], width)
+		m.visibleEntries[index].SetRenderHeight(renderedHeight) 
 		lines = append(lines, rendered)
 	}
 	return lines
@@ -128,7 +137,7 @@ func (m model) contentLines() []string {
 
 func (m model) visibleEntryCount() int {
 	if m.query == "" {
-		return len(m.entries)
+		return len(m.visibleEntries)
 	}
 
 	indexes := m.filteredEntryIndexes()
@@ -164,7 +173,7 @@ func (m model) totalHeight() int {
 	}
 	if !m.cfg.Source.FileFollow {
 		total := 0
-		for _, e := range m.entries {
+		for _, e := range m.visibleEntries {
 			total += e.ContentHeight()
 		}
 		maxHeight := max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
@@ -176,7 +185,7 @@ func (m model) totalHeight() int {
 
 func (m model) contentHeight() int {
 	total := 0
-	for _, e := range m.entries {
+	for _, e := range m.visibleEntries {
 		total += e.ContentHeight()
 	}
 	return total

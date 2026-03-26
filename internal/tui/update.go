@@ -20,10 +20,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m = m.syncViewport(true)
 		return m, nil
 	case EntryMsg:
-		m = m.appendEntry(msg.Entry)
 		if m.paused {
-			m.pendingWhilePaused++
+      m = m.queueEntry(msg.Entry)
 			return m, nil
+		}else{
+			m = m.appendEntry(msg.Entry)
 		}
 		m = m.syncViewport(true)
 		return m, nil
@@ -87,7 +88,8 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case keySpaceLiteral:
 		m.paused = !m.paused
 		if !m.paused {
-			m.pendingWhilePaused = 0
+			m = m.appendEntry(m.queuedEntries...)
+			clear(m.queuedEntries)
 			m = m.syncViewport(true)
 		}
 		return m, nil

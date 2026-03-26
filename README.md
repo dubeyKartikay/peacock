@@ -1,7 +1,16 @@
-# Peacock
-<img src="./peacock.png" style="max-width:500px;display:block;margin:auto"/>
+<div align="center">
+  <h1>Peacock</h1>
+</div>
 
-A charming `tail` replacement for developers who work with structured logs. Pipe your JSON log output into peacock and get colorized, readable, filterable log streams in the terminal.
+<p align="center">
+  <img width="500" src="./assets/peacock.png" style="max-width:500px;display:block;margin:auto"/>
+</p>
+
+<div align="center">
+  A charming <code>tail</code> replacement for developers
+</div>
+
+Pipe your JSON log output into peacock and get colorized, readable, filterable log streams in the terminal.
 
 ```sh
 go run . | peacock
@@ -9,12 +18,23 @@ kubectl logs -f my-pod | peacock
 peacock -f app.log
 ```
 
+#### Tail Vs Peacock
+<img src="./assets/tail_vs_peacock.gif" style="max-width:100%"/>
+
+
+#### Follow Logs in Peacock
+<img src="./assets/follow.gif"  style="max-width:100%"/>
+
+### Pause / Resume Live Tail
+
+<img src="./assets/follow_and_pause.gif" style="max-width:100%"/>
+
 ---
 
 ## Installation
 
 ```sh
-go install github.com/yourusername/peacock@latest
+go install github.com/dubeyKartikay/peacock@latest
 ```
 
 ---
@@ -22,10 +42,6 @@ go install github.com/yourusername/peacock@latest
 ## Usage
 
 ```sh
-# Pipe stdin (primary mode)
-
-your-app | peacock
-
 # Read a file
 peacock app.log
 
@@ -34,6 +50,9 @@ peacock -f app.log
 
 # Tail the last 50 lines of a file
 peacock -f -n 50 app.log
+
+# Pipe stdin
+your-app | peacock
 ```
 
 ### CLI Flags
@@ -42,7 +61,7 @@ peacock -f -n 50 app.log
 |------|---------|-------------|
 | `-f`, `--follow` | `false` | Follow appended lines (like `tail -f`) |
 | `-n`, `--lines` | `10` | Number of lines to read from end of file on startup |
-| `--config` | — | Path to a custom config file |
+| `--config` | Platform default | Path to a custom config file |
 
 ### Keybindings
 
@@ -63,11 +82,11 @@ peacock -f -n 50 app.log
 
 peacock parses each line as JSON and renders it with structured formatting and color:
 
-- **Level** — color-coded: `ERROR`/`FATAL` in red, `WARN` in yellow, `INFO` in green, `DEBUG` in cyan
-- **Timestamp** — dimmed, pulled from `time` or `timestamp` fields
-- **Message** — bright white, pulled from `msg` or `message` fields
-- **Caller** — pulled from `caller` or `file` fields
-- **Context** — all remaining fields rendered as dimmed `key=value` pairs
+- **Level**: color-coded: `ERROR`/`FATAL` in red, `WARN` in yellow, `INFO` in green, `DEBUG` in cyan
+- **Timestamp**: dimmed, pulled from `time` or `timestamp` fields
+- **Message**: bright white, pulled from `msg` or `message` fields
+- **Caller**: pulled from `caller` or `file` fields
+- **Context**: all remaining fields rendered as dimmed `key=value` pairs
 
 Non-JSON lines are printed as-is without any transformation.
 
@@ -126,9 +145,9 @@ Theme colors accept either a [256-color ANSI code](https://en.wikipedia.org/wiki
 
 Config values are resolved in this order (highest to lowest):
 
-1. **Environment variables** — override everything
-2. **`config.yaml`** — your persistent config file
-3. **Defaults** — built-in fallback values
+1. **Environment variables**: overrides everything
+2. **`config.yaml`**: your config file
+3. **Defaults**: built-in fallback values
 
 ### Environment Variables
 
@@ -147,11 +166,11 @@ PEACOCK_SOURCE_FILE_POLL=false         # source.file_poll
 The following items are planned but not yet implemented.
 
 
-- **Fuzzy filter** — the current filter uses substring matching; fuzzy matching is planned
-- **Logfmt support** — v0 only parses JSON; logfmt auto-detection is deferred
-- **Multi-file multiplexing** — tail multiple files simultaneously with per-source tagging
-- **Complex log rotation handling** — re-attaching to rotated/moved files without restarting
-- **In-message syntax highlighting** — highlight IPs, UUIDs, durations, and other patterns inside log messages
-- **Advanced field filtering** — AST-based expressions like `level=error AND duration>500`
-- **Stack trace parsing** — multi-line stack traces currently print as raw strings
-- **Custom JSON key mapping** — CLI flags or config to define which keys map to level/message/timestamp/caller
+- **Fuzzy filter**: the current filter uses substring matching; fuzzy matching is planned
+- **Logfmt support**: v0 only parses JSON; logfmt auto-detection is deferred
+- **Multi-file multiplexing**: tail multiple files simultaneously with per-source tagging
+- **Complex log rotation handling**: re-attaching to rotated/moved files without restarting
+- **In-message syntax highlighting**: highlight IPs, UUIDs, durations, and other patterns inside log messages
+- **Advanced field filtering**: AST-based expressions like `level=error AND duration>500`
+- **Stack trace parsing**: multi-line stack traces currently print as raw strings
+- **Custom JSON key mapping**: CLI flags or config to define which keys map to level/message/timestamp/caller

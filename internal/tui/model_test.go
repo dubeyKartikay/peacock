@@ -70,8 +70,8 @@ func TestSlashFilterUsesLiteralSubstringMatching(t *testing.T) {
 	if filtered[0] != 1 {
 		t.Fatalf("expected filtered index 1, got %d", filtered[0])
 	}
-	if m.entries[filtered[0]].Message != "database timeout" {
-		t.Fatalf("unexpected filtered message %q", m.entries[filtered[0]].Message)
+	if m.visibleEntries[filtered[0]].Message != "database timeout" {
+		t.Fatalf("unexpected filtered message %q", m.visibleEntries[filtered[0]].Message)
 	}
 
 	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyEsc})
