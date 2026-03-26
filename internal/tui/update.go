@@ -89,7 +89,7 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		m.paused = !m.paused
 		if !m.paused {
 			m = m.appendEntry(m.queuedEntries...)
-			clear(m.queuedEntries)
+			m.queuedEntries = nil
 			m = m.syncViewport(true)
 		}
 		return m, nil
