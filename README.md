@@ -166,11 +166,9 @@ PEACOCK_SOURCE_FILE_POLL=false         # source.file_poll
 The following items are planned but not yet implemented.
 
 
-- **Fuzzy filter**: the current filter uses substring matching; fuzzy matching is planned
 - **Logfmt support**: v0 only parses JSON; logfmt auto-detection is deferred
 - **Multi-file multiplexing**: tail multiple files simultaneously with per-source tagging
 - **Complex log rotation handling**: re-attaching to rotated/moved files without restarting
 - **In-message syntax highlighting**: highlight IPs, UUIDs, durations, and other patterns inside log messages
-- **Advanced field filtering**: AST-based expressions like `level=error AND duration>500`
 - **Stack trace parsing**: multi-line stack traces currently print as raw strings
 - **Custom JSON key mapping**: CLI flags or config to define which keys map to level/message/timestamp/caller

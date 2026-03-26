@@ -12,7 +12,7 @@ Sleep 1s
 
 Enter
 
-Sleep 10s
+Sleep 3s
 
 Space 1
 
