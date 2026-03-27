@@ -10,7 +10,16 @@
   A charming <code>tail</code> replacement for developers
 </div>
 
+<p align="center">
+  <a href="https://go.dev/"><img src="https://img.shields.io/github/go-mod/go-version/dubeyKartikay/peacock" alt="Go version"/></a>
+  <a href="https://github.com/dubeyKartikay/peacock/releases"><img src="https://img.shields.io/github/v/release/dubeyKartikay/peacock" alt="Latest release"/></a>
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/dubeyKartikay/peacock" alt="License"/></a>
+  <a href="https://goreportcard.com/report/github.com/dubeyKartikay/peacock"><img src="https://goreportcard.com/badge/github.com/dubeyKartikay/peacock" alt="Go Report Card"/></a>
+</p>
+
 Pipe your JSON log output into peacock and get colorized, readable, filterable log streams in the terminal.
+
+<img max-width="500px" src="./assets/peacock_screenshot.png"/>
 
 ```sh
 go run . | peacock
@@ -25,13 +34,31 @@ peacock -f app.log
 #### Follow Logs in Peacock
 <img src="./assets/follow.gif"  style="max-width:100%"/>
 
-### Pause / Resume Live Tail
+#### Pause / Resume Live Tail
 
 <img src="./assets/follow_and_pause.gif" style="max-width:100%"/>
 
 ---
 
 ## Installation
+
+**Pre-built binaries** for Linux, macOS, and Windows are available on the [releases page](https://github.com/dubeyKartikay/peacock/releases).
+
+```sh
+# Extract the archive (replace filename with your platform's download)
+tar -xzf peacock_Linux_x86_64.tar.gz
+
+# Check where your PATH installs binaries
+echo $PATH
+
+# Copy the binary to a directory on your PATH (e.g. /usr/local/bin)
+sudo cp peacock /usr/local/bin/
+
+# Verify the install
+peacock --help
+```
+
+**With Go:**
 
 ```sh
 go install github.com/dubeyKartikay/peacock@latest
