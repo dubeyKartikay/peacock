@@ -1,4 +1,4 @@
-module peacock
+module github.com/dubeyKartikay/peacock
 
 go 1.25.6
 

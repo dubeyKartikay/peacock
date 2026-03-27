@@ -6,10 +6,10 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	appconfig "peacock/internal/config"
-	"peacock/internal/logs"
-	"peacock/internal/source"
-	tui "peacock/internal/tui"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
+	"github.com/dubeyKartikay/peacock/internal/logs"
+	"github.com/dubeyKartikay/peacock/internal/source"
+	tui "github.com/dubeyKartikay/peacock/internal/tui"
 )
 
 type Options struct {

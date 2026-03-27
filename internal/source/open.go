@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"golang.org/x/term"
-	appconfig "peacock/internal/config"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 )
 
 const (

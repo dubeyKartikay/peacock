@@ -6,8 +6,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"peacock/internal/app"
-	appconfig "peacock/internal/config"
+	"github.com/dubeyKartikay/peacock/internal/app"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 )
 
 const (

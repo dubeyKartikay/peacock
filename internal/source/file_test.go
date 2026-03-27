@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	appconfig "peacock/internal/config"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 )
 
 func TestTailedFileSourceReceivesAppendedLines(t *testing.T) {

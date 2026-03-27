@@ -6,7 +6,7 @@ import (
 	"io"
 	"os"
 
-	appconfig "peacock/internal/config"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 )
 
 const (

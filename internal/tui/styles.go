@@ -3,8 +3,8 @@ package tui
 import (
 	"charm.land/lipgloss/v2"
 
-	appconfig "peacock/internal/config"
-	"peacock/internal/logs"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
+	"github.com/dubeyKartikay/peacock/internal/logs"
 )
 
 const (

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"peacock/internal/cli"
+	"github.com/dubeyKartikay/peacock/internal/cli"
 )
 
 func main() {

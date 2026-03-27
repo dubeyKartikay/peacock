@@ -61,7 +61,7 @@ peacock --help
 **With Go:**
 
 ```sh
-go install github.com/dubeyKartikay/peacock@latest
+go install github.com/dubeyKartikay/peacock/cmd/peacock@latest
 ```
 
 ---

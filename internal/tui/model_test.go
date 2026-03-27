@@ -7,8 +7,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 
-	appconfig "peacock/internal/config"
-	"peacock/internal/logs"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
+	"github.com/dubeyKartikay/peacock/internal/logs"
 )
 
 var ansiPattern = regexp.MustCompile(`\x1b\[[0-9;]*m`)

@@ -8,8 +8,8 @@ import (
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 
-	appconfig "peacock/internal/config"
-	"peacock/internal/logs"
+	appconfig "github.com/dubeyKartikay/peacock/internal/config"
+	"github.com/dubeyKartikay/peacock/internal/logs"
 )
 
 const (
