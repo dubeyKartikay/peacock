@@ -94,11 +94,13 @@ Non-JSON lines are printed as-is without any transformation.
 
 ## Configuration
 
-peacock follows the XDG Base Directory spec. The config file lives at:
+The config file location depends on your platform:
 
-```
-~/.config/peacock/config.yaml
-```
+| Platform | Path |
+|----------|------|
+| Linux | `$XDG_CONFIG_HOME/peacock/config.yaml` (falls back to `~/.config/peacock/config.yaml`) |
+| macOS | `~/Library/Application Support/peacock/config.yaml` |
+| Windows | `%AppData%\peacock\config.yaml` |
 
 The directory and file are created automatically on first run if they don't exist.
 
