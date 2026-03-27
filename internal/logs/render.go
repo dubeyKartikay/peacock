@@ -5,6 +5,7 @@ import (
 	"strings"
 	"charm.land/lipgloss/v2"
 	"github.com/muesli/reflow/wordwrap"
+	"github.com/muesli/reflow/wrap"
 )
 
 const (
@@ -93,6 +94,6 @@ func wrapString(text string, maxWidth int) string {
 	if lipgloss.Width(text) <= maxWidth {
 		return text
 	}
-	text = wordwrap.String(text, maxWidth)
+	text = wrap.String(wordwrap.String(text, maxWidth), maxWidth)
 	return text
 }
