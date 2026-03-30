@@ -42,6 +42,18 @@ archives:
       - goos: windows
         formats: [zip]
 
+brews:
+  - name: peacock
+    homepage: "https://github.com/dubeyKartikay/peacock"
+    description: "Beautiful JSON log viewer for your terminal."
+    license: "MIT"
+    repository:
+      owner: dubeyKartikay
+      name: homebrew-peacock
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
+    install: |
+      bin.install "peacock"
+
 changelog:
   sort: asc
   filters:

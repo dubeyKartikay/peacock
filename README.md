@@ -42,6 +42,13 @@ peacock -f app.log
 
 ## Installation
 
+**Homebrew** (Linux & macOS):
+
+```sh
+brew tap dubeyKartikay/peacock
+brew install peacock
+```
+
 **One-liner** (Linux & macOS) — installs the latest release to `~/.local/bin` and updates your shell config:
 
 ```sh
