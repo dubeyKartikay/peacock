@@ -48,6 +48,7 @@ type model struct {
 	sourceDone         bool
 	sourceErr          error
 	query              string
+	filters            []string
 }
 
 func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
@@ -92,10 +93,9 @@ func (m model) queueEntry(entry logs.Entry) model {
 }
 
 func (m model) filteredEntryIndexes() []int {
-	if m.query == "" {
+	if len(m.filters) == 0 {
 		return []int{}
 	}
-
 	filtered := make([]int, 0, len(m.visibleEntries))
 	for index, entry := range m.visibleEntries {
 		if strings.Contains(entry.Search, m.query) {

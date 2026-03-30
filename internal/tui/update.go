@@ -5,7 +5,6 @@ import (
 )
 
 const (
-	clearFilterText = ""
 	keyFilterMode   = "/"
 	keyGoToBottom   = "G"
 	keyGoToTop      = "g"
@@ -41,18 +40,6 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.KeyPressMsg:
 		return m.handleKey(msg)
 	}
-
-	if m.filterActive {
-		var cmd tea.Cmd
-		m.filterInput, cmd = m.filterInput.Update(msg)
-		newQuery := m.filterInput.Value()
-		if newQuery != m.query {
-			m.query = newQuery
-			m = m.syncViewport(true)
-		}
-		return m, cmd
-	}
-
 	var cmd tea.Cmd
 	m.viewport, cmd = m.viewport.Update(msg)
 	return m, cmd
@@ -65,22 +52,19 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 	if m.filterActive {
 		switch msg.Code {
-		case tea.KeyEsc:
-			m.filterActive = false
-			m.query = clearFilterText
-			m.filterInput.SetValue(clearFilterText)
-			m.filterInput.Blur()
-			m = m.syncViewport(true)
-			return m, nil
+			case tea.KeyEsc:
+				m.filterActive = false
+				m.filterInput.Blur()
+				m = m.syncViewport(true)
+				return m, nil
+		case tea.KeyEnter:
+				m.filterActive = false
+				m.query = m.filterInput.Value()
+				m = m.syncViewport(true)
+				return m, nil
 		}
-
 		var cmd tea.Cmd
 		m.filterInput, cmd = m.filterInput.Update(msg)
-		newQuery := m.filterInput.Value()
-		if newQuery != m.query {
-			m.query = newQuery
-			m = m.syncViewport(true)
-		}
 		return m, cmd
 	}
 

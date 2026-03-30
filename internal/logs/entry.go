@@ -3,11 +3,11 @@ package logs
 type Entry struct {
 	Raw       string
 	Parsed    bool
-	Level     string
-	Timestamp string
-	Message   string
-	Caller    string
-	Context   []Field
+	Level     Part
+	Timestamp Part
+	Message   Part
+	Caller    Part
+	Context   Part
 	Search    string
 	renderHeight int
 }
@@ -25,6 +25,11 @@ type Field struct {
 	Value string
 }
 
+type Highlight struct {
+	Start int
+	End   int
+}
+
 type PartKind int
 
 const (
@@ -39,5 +44,5 @@ const (
 type Part struct {
 	Kind  PartKind
 	Text  string
-	Level string
+	highlights []Highlight
 }

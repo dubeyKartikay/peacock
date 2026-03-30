@@ -47,16 +47,16 @@ func defaultStyles(cfg appconfig.ThemeConfig) styles {
 		panel:      lipgloss.NewStyle().Border(lipgloss.RoundedBorder()).BorderForeground(borderColor),
 		status:     defaultStatusStyles(cfg),
 		filterBar:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.FilterFG)).Padding(barVerticalPadding, barHorizontalPadding),
-		timestamp:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.TimestampFG)).Faint(cfg.TimestampFaint),
-		message:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.MessageFG)),
-		caller:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.CallerFG)).Faint(cfg.CallerFaint),
-		context:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.ContextFG)).Faint(cfg.ContextFaint),
+		timestamp:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.TimestampFG)).Faint(cfg.TimestampFaint).PaddingRight(generalPadding),
+		message:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.MessageFG)).PaddingRight(generalPadding),
+		caller:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.CallerFG)).Faint(cfg.CallerFaint).PaddingRight(generalPadding),
+		context:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.ContextFG)).Faint(cfg.ContextFaint).PaddingRight(generalPadding),
 		raw:        lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.RawFG)),
-		levelError: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelError)).Bold(cfg.LevelBold),
-		levelWarn:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelWarn)).Bold(cfg.LevelBold),
-		levelInfo:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelInfo)).Bold(cfg.LevelBold),
-		levelDebug: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelDebug)).Bold(cfg.LevelBold),
-		levelOther: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelOther)).Bold(cfg.LevelBold),
+		levelError: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelError)).Bold(cfg.LevelBold).PaddingRight(generalPadding),
+		levelWarn:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelWarn)).Bold(cfg.LevelBold).PaddingRight(generalPadding),
+		levelInfo:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelInfo)).Bold(cfg.LevelBold).PaddingRight(generalPadding),
+		levelDebug: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelDebug)).Bold(cfg.LevelBold).PaddingRight(generalPadding),
+		levelOther: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelOther)).Bold(cfg.LevelBold).PaddingRight(generalPadding),
 	}
 }
 
@@ -74,16 +74,19 @@ func defaultStatusStyles(cfg appconfig.ThemeConfig) statusStyles {
 }
 
 func (s styles) renderEntry(entry logs.Entry, width int) (string,int) {
-	parts := logs.FormatEntry(entry)
+	if(!entry.Parsed) {
+		return entry.Raw, lipgloss.Height(entry.Raw)
+	}
 	logMetadata := ""
 	content := ""
-	for _, part := range parts {
-		if(part.Kind == logs.PartTimestamp || part.Kind == logs.PartLevel) {
-			logMetadata = lipgloss.JoinHorizontal(lipgloss.Left, logMetadata, s.renderPart(part))
-		}else{
-			content = lipgloss.JoinHorizontal(lipgloss.Left, content, s.renderPart(part))
-		}
-	}
+
+	logMetadata = lipgloss.JoinHorizontal(lipgloss.Left, logMetadata, s.renderPart(entry.Timestamp))
+	logMetadata = lipgloss.JoinHorizontal(lipgloss.Left, logMetadata, s.renderPart(entry.Level))
+
+	content = lipgloss.JoinHorizontal(lipgloss.Left, content, s.renderPart(entry.Message))
+	content = lipgloss.JoinHorizontal(lipgloss.Left, content, s.renderPart(entry.Caller))
+	content = lipgloss.JoinHorizontal(lipgloss.Left, content, s.renderPart(entry.Context))
+
 	view := logs.WrapHorizontalOverflow(logMetadata, content, width)
 	return view, lipgloss.Height(view)
 }
@@ -93,7 +96,7 @@ func (s styles) renderPart(part logs.Part) string {
 	case logs.PartTimestamp:
 		return s.timestamp.Render(part.Text)
 	case logs.PartLevel:
-		return s.levelStyle(part.Level).Render(part.Text)
+		return s.levelStyle(part.Text).Render(part.Text)
 	case logs.PartCaller:
 		return s.caller.Render(part.Text)
 	case logs.PartContext:
