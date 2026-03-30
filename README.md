@@ -42,7 +42,19 @@ peacock -f app.log
 
 ## Installation
 
-**Pre-built binaries** for Linux, macOS, and Windows are available on the [releases page](https://github.com/dubeyKartikay/peacock/releases).
+**One-liner** (Linux & macOS) — installs the latest release to `~/.local/bin` and updates your shell config:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/dubeyKartikay/peacock/main/install.sh | bash
+```
+
+**With Go:**
+
+```sh
+go install github.com/dubeyKartikay/peacock/cmd/peacock@latest
+```
+
+**Manual** — pre-built binaries for Linux, macOS, and Windows are available on the [releases page](https://github.com/dubeyKartikay/peacock/releases).
 
 ```sh
 # Extract the archive (replace filename with your platform's download)
@@ -56,12 +68,6 @@ sudo cp peacock /usr/local/bin/
 
 # Verify the install
 peacock --help
-```
-
-**With Go:**
-
-```sh
-go install github.com/dubeyKartikay/peacock/cmd/peacock@latest
 ```
 
 ---

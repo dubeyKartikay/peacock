@@ -96,7 +96,7 @@ already_installed() {
   fi
 
   local installed_version
-  installed_version="$("${BIN_DIR}/${BIN_NAME}" version 2>/dev/null | grep -oE 'v[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
+  installed_version="v$("${BIN_DIR}/${BIN_NAME}" version 2>/dev/null | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 || true)"
   if [[ "$installed_version" != "$target_version" ]]; then
     return 1
   fi
