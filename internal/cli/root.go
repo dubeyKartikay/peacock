@@ -10,6 +10,9 @@ import (
 	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 )
 
+// Version is set at build time via -ldflags.
+var Version = "dev"
+
 const (
 	rootUse             = "peacock [file]"
 	rootShort           = "Pretty JSON log viewer for stdin or tailed files"
@@ -62,6 +65,14 @@ func NewRootCommand(stdin *os.File) *cobra.Command {
 
 	cmd.Flags().StringVar(&configPath, appconfig.FlagConfig, "", configFlagUsage)
 	appconfig.RegisterFlags(cmd.Flags())
+
+	cmd.AddCommand(&cobra.Command{
+		Use:   "version",
+		Short: "Print the version",
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(Version)
+		},
+	})
 
 	return cmd
 }
