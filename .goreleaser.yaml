@@ -20,6 +20,8 @@ builds:
     binary: peacock
     env:
       - CGO_ENABLED=0
+    ldflags:
+      - -X github.com/dubeyKartikay/peacock/internal/cli.Version={{.Version}}
     goos:
       - linux
       - darwin
