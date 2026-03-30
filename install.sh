@@ -121,9 +121,7 @@ add_to_path() {
   local shell_name
   shell_name="$(basename "${SHELL:-}")"
 
-  if [[ ":${PATH}:" == *":${BIN_DIR}:"* ]] \
-    && [[ -f "$shell_config" ]] \
-    && grep -qF "$BIN_DIR" "$shell_config"; then
+  if [[ ":${PATH}:" == *":${BIN_DIR}:"* ]]; then
     ok "${BIN_DIR} already in PATH"
     return
   fi
