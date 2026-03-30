@@ -33,7 +33,7 @@ func NewRootCommand(stdin *os.File) *cobra.Command {
 		Use:          rootUse,
 		Short:        rootShort,
 		Args:         cobra.MaximumNArgs(1),
-		SilenceUsage: true,
+		SilenceUsage: false,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			v, err := appconfig.NewViper(configPath, "")
 			if err != nil {
