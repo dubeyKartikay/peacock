@@ -110,7 +110,7 @@ func (m model) filteredEntryIndexes() []int {
 }
 
 func (m model) contentLines() []string {
-	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize()-2)
+	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 	if m.query == "" {
 		lines := make([]string, 0, len(m.visibleEntries))
 		for index := range m.visibleEntries {
