@@ -1,14 +1,14 @@
 package logs
 
 type Entry struct {
-	Raw       string
-	Parsed    bool
-	Level     Part
-	Timestamp Part
-	Message   Part
-	Caller    Part
-	Context   Part
-	Search    string
+	Raw          string
+	Parsed       bool
+	Level        Part
+	Timestamp    Part
+	Message      Part
+	Caller       Part
+	Context      Part
+	Search       string
 	renderHeight int
 }
 
@@ -42,7 +42,7 @@ const (
 )
 
 type Part struct {
-	Kind  PartKind
-	Text  string
+	Kind       PartKind
+	Text       string
 	highlights []Highlight
 }

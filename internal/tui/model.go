@@ -35,22 +35,22 @@ type SourceDoneMsg struct{}
 type Filters []string
 
 type model struct {
-	sourceName         string
-	width              int
-	height             int
-	cfg                appconfig.Config
-	viewport           viewport.Model
-	filterInput        textinput.Model
-	styles             styles
-	inBufferEntries    []logs.Entry
-	visibleEntries     []*logs.Entry
-  queuedEntries      []logs.Entry
-	paused             bool
-	filterActive       bool
-	sourceDone         bool
-	sourceErr          error
-	query              string
-	filters            Filters
+	sourceName      string
+	width           int
+	height          int
+	cfg             appconfig.Config
+	viewport        viewport.Model
+	filterInput     textinput.Model
+	styles          styles
+	inBufferEntries []logs.Entry
+	visibleEntries  []*logs.Entry
+	queuedEntries   []logs.Entry
+	paused          bool
+	filterActive    bool
+	sourceDone      bool
+	sourceErr       error
+	query           string
+	filters         Filters
 }
 
 func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
@@ -120,7 +120,6 @@ func (m model) filteredEntryIndexes() []*logs.Entry {
 	return filtered
 }
 
-
 func (m *model) contentLines() []string {
 	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 
@@ -129,7 +128,7 @@ func (m *model) contentLines() []string {
 	lines := make([]string, 0, len(m.visibleEntries))
 	for index := range m.visibleEntries {
 		rendered, renderedHeight := m.styles.renderEntry(m.visibleEntries[index], width)
-		m.visibleEntries[index].SetRenderHeight(renderedHeight) 
+		m.visibleEntries[index].SetRenderHeight(renderedHeight)
 		lines = append(lines, rendered)
 	}
 	return lines

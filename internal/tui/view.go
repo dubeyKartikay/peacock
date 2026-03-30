@@ -13,7 +13,7 @@ const (
 	filterLabelFormat = "%s  filter:%q"
 	liveStateLabel    = "LIVE"
 	loadingText       = "Loading Peacock..."
-	pausedStateLabel = "PAUSED"
+	pausedStateLabel  = "PAUSED"
 	sourceLabelFormat = "%s  source:%s"
 	stateLabelFormat  = "%s  entries:%d  visible:%d"
 	statusErrorFormat = "%s  err:%s"
@@ -37,7 +37,7 @@ func (m model) View() tea.View {
 		parts = append(parts, m.styles.filterBar.Render(m.filterInput.View()))
 	}
 	parts = append(parts, status)
-	return tea.View{Content: lipgloss.JoinVertical(lipgloss.Left, parts...,)}
+	return tea.View{Content: lipgloss.JoinVertical(lipgloss.Left, parts...)}
 }
 
 func (m model) renderStatus() string {
@@ -49,7 +49,7 @@ func (m model) renderStatus() string {
 	} else if m.sourceDone {
 		state = statusStyle.done.Render(doneStateLabel)
 	}
-	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d",m.visibleEntryCount(), len(m.inBufferEntries) + len(m.queuedEntries)))
+	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d", m.visibleEntryCount(), len(m.inBufferEntries)+len(m.queuedEntries)))
 	if m.sourceErr != nil {
 		entries = statusStyle.err.Render(entries)
 	}
@@ -86,7 +86,7 @@ func (m model) renderStatus() string {
 	if lipgloss.Width(left) > leftWidth {
 		left = truncateText(left, leftWidth)
 	}
-	centerPad := max(0,contentWidth - lipgloss.Width(left) - lipgloss.Width(right))
+	centerPad := max(0, contentWidth-lipgloss.Width(left)-lipgloss.Width(right))
 	center := strings.Repeat(" ", centerPad)
-	return statusStyle.bar.Render(lipgloss.JoinHorizontal(lipgloss.Top, left,center, right))
+	return statusStyle.bar.Render(lipgloss.JoinHorizontal(lipgloss.Top, left, center, right))
 }

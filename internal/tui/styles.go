@@ -10,7 +10,7 @@ import (
 const (
 	barVerticalPadding   = 0
 	barHorizontalPadding = 1
-	generalPadding = 1
+	generalPadding       = 1
 )
 
 type styles struct {
@@ -37,7 +37,7 @@ type statusStyles struct {
 	source  lipgloss.Style
 	filter  lipgloss.Style
 	entries lipgloss.Style
-	visible    lipgloss.Style
+	visible lipgloss.Style
 	err     lipgloss.Style
 	help    lipgloss.Style
 }
@@ -63,7 +63,7 @@ func defaultStyles(cfg appconfig.ThemeConfig) styles {
 
 func defaultStatusStyles(cfg appconfig.ThemeConfig) statusStyles {
 	return statusStyles{
-		bar :    lipgloss.NewStyle().Padding(barVerticalPadding, barHorizontalPadding),
+		bar:     lipgloss.NewStyle().Padding(barVerticalPadding, barHorizontalPadding),
 		live:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelError)),
 		paused:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelWarn)).PaddingRight(generalPadding),
 		done:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelOther)).PaddingRight(generalPadding),
@@ -75,8 +75,8 @@ func defaultStatusStyles(cfg appconfig.ThemeConfig) statusStyles {
 	}
 }
 
-func (s styles) renderEntry(entry *logs.Entry, width int) (string,int) {
-	if(!entry.Parsed) {
+func (s styles) renderEntry(entry *logs.Entry, width int) (string, int) {
+	if !entry.Parsed {
 		return entry.Raw, lipgloss.Height(entry.Raw)
 	}
 	logMetadata := ""

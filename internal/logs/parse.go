@@ -41,8 +41,8 @@ func ParseLine(line string) Entry {
 
 	entry.Parsed = true
 	entry.Level = Part{
-		Kind:  PartLevel,
-		Text:  extractString(payload, levelKeys...),
+		Kind: PartLevel,
+		Text: extractString(payload, levelKeys...),
 	}
 	entry.Timestamp = Part{
 		Kind: PartTimestamp,
@@ -50,7 +50,7 @@ func ParseLine(line string) Entry {
 	}
 
 	entry.Message = Part{
-		Kind: PartMessage, 
+		Kind: PartMessage,
 		Text: extractString(payload, messageKeys...),
 	}
 	entry.Caller = Part{
@@ -149,4 +149,3 @@ func buildSearchText(entry Entry) string {
 	parts := []string{entry.Timestamp.Text, entry.Level.Text, entry.Message.Text, entry.Caller.Text, entry.Context.Text}
 	return strings.Join(parts, lineJoinSeparator)
 }
-

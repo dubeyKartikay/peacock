@@ -5,11 +5,11 @@ import (
 )
 
 const (
-	keyFilterMode      = "/"
-	keyGoToBottom      = "G"
-	keyGoToTop         = "g"
+	keyFilterMode       = "/"
+	keyGoToBottom       = "G"
+	keyGoToTop          = "g"
 	keyRemoveLastFilter = "backspace"
-	keySpaceLiteral    = "space"
+	keySpaceLiteral     = "space"
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -21,9 +21,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case EntryMsg:
 		if m.paused {
-      m = m.queueEntry(msg.Entry)
+			m = m.queueEntry(msg.Entry)
 			return m, nil
-		}else{
+		} else {
 			m = m.appendEntry(msg.Entry)
 		}
 		m = m.syncViewport(true)
@@ -53,17 +53,17 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 	if m.filterActive {
 		switch msg.Code {
-			case tea.KeyEsc:
-				m.filterActive = false
-				m.filterInput.Blur()
-				m = m.syncViewport(true)
-				return m, nil
-			case tea.KeyEnter:
-				m.filterActive = false
-				q := m.filterInput.Value()
-			  m.filters = append(m.filters, q)
-				m = m.syncViewport(true)
-				return m, nil
+		case tea.KeyEsc:
+			m.filterActive = false
+			m.filterInput.Blur()
+			m = m.syncViewport(true)
+			return m, nil
+		case tea.KeyEnter:
+			m.filterActive = false
+			q := m.filterInput.Value()
+			m.filters = append(m.filters, q)
+			m = m.syncViewport(true)
+			return m, nil
 		}
 		var cmd tea.Cmd
 		m.filterInput, cmd = m.filterInput.Update(msg)

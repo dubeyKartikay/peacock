@@ -1,10 +1,10 @@
 package logs
 
 import (
-	"strings"
 	"charm.land/lipgloss/v2"
 	"github.com/muesli/reflow/wordwrap"
 	"github.com/muesli/reflow/wrap"
+	"strings"
 )
 
 const (

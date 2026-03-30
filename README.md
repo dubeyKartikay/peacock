@@ -30,21 +30,6 @@ peacock -f app.log
 #### Tail vs Peacock
 <img src="./assets/tail_vs_peacock.gif" style="max-width:100%"/>
 
-#### Follow Logs
-<img src="./assets/follow.gif" style="max-width:100%"/>
-
-#### Pause / Resume
-<img src="./assets/pause.gif" style="max-width:100%"/>
-
-#### Filter Logs
-<img src="./assets/filter.gif" style="max-width:100%"/>
-
-#### Multiple Filters
-<img src="./assets/multiple_filters.gif" style="max-width:100%"/>
-
-#### Remove Last Filter
-<img src="./assets/remove_filter.gif" style="max-width:100%"/>
-
 ---
 
 ## Installation
@@ -82,7 +67,25 @@ sudo cp peacock /usr/local/bin/
 
 # Verify the install
 peacock --help
+
 ```
+
+---
+
+#### Follow Logs
+<img src="./assets/follow.gif" style="max-width:100%"/>
+
+#### Pause / Resume
+<img src="./assets/pause.gif" style="max-width:100%"/>
+
+#### Filter Logs
+<img src="./assets/filter.gif" style="max-width:100%"/>
+
+#### Multiple Filters
+<img src="./assets/multiple_filters.gif" style="max-width:100%"/>
+
+#### Remove Last Filter
+<img src="./assets/remove_filter.gif" style="max-width:100%"/>
 
 ---
 

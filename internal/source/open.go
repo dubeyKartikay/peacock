@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"golang.org/x/term"
 	appconfig "github.com/dubeyKartikay/peacock/internal/config"
+	"golang.org/x/term"
 )
 
 const (

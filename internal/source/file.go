@@ -22,25 +22,23 @@ type source struct {
 	events chan Event
 }
 
-
 type tailedFileSource struct {
 	source
-	tail         *tail.Tail
+	tail *tail.Tail
 }
 
 type fileSource struct {
-  source
+	source
 	reader io.ReadCloser
 }
 
-
 func NewFileSource(path string, cfg appconfig.SourceConfig) (Source, error) {
-	file,err := os.Open(path)
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("open file %q: %w", path, err)
 	}
-	pos,_ :=getPositionOfNthLineFromEnd(file, cfg.FileTailLines)
-	file.Seek(int64(pos),io.SeekStart)
+	pos, _ := getPositionOfNthLineFromEnd(file, cfg.FileTailLines)
+	file.Seek(int64(pos), io.SeekStart)
 	src := &fileSource{
 		source: source{
 			name:   path,
@@ -55,17 +53,17 @@ func NewFileSource(path string, cfg appconfig.SourceConfig) (Source, error) {
 func NewTailedFileSource(path string, cfg appconfig.SourceConfig) (Source, error) {
 	var t *tail.Tail
 	var err error
-	file,err := os.Open(path)
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, fmt.Errorf("open file %q: %w", path, err)
 	}
 	defer file.Close()
-	pos ,_ :=getPositionOfNthLineFromEnd(file, cfg.FileTailLines)
+	pos, _ := getPositionOfNthLineFromEnd(file, cfg.FileTailLines)
 	t, err = tail.TailFile(path, tail.Config{
-		Follow:        true,
-		ReOpen:        cfg.FileReopen,
-		MustExist:     fileMustExist,
-		Poll:     cfg.FilePoll,
+		Follow:    true,
+		ReOpen:    cfg.FileReopen,
+		MustExist: fileMustExist,
+		Poll:      cfg.FilePoll,
 		Location: &tail.SeekInfo{
 			Offset: pos,
 			Whence: io.SeekStart,
@@ -81,7 +79,7 @@ func NewTailedFileSource(path string, cfg appconfig.SourceConfig) (Source, error
 			name:   path,
 			events: make(chan Event, fileEventBufferSize),
 		},
-		tail:         t,
+		tail: t,
 	}
 	go src.stream()
 	return src, nil
@@ -149,7 +147,7 @@ func (s *tailedFileSource) stream() {
 	s.events <- Event{Done: true}
 }
 
-func getPositionOfNthLineFromEnd(file *os.File, n int) (int64,error) {
+func getPositionOfNthLineFromEnd(file *os.File, n int) (int64, error) {
 	const chunkSize = 512
 
 	size, err := file.Seek(0, io.SeekEnd)
@@ -163,7 +161,7 @@ func getPositionOfNthLineFromEnd(file *os.File, n int) (int64,error) {
 	// Skip a trailing newline so it doesn't count as an extra empty line.
 	end := make([]byte, 1)
 	if _, err := file.ReadAt(end, size-1); err != nil {
-		return 0,err
+		return 0, err
 	}
 	scanEnd := size
 	if end[0] == '\n' {
@@ -182,10 +180,10 @@ func getPositionOfNthLineFromEnd(file *os.File, n int) (int64,error) {
 		remaining -= chunkLen
 
 		if _, err := file.Seek(remaining, io.SeekStart); err != nil {
-			return 0,err
+			return 0, err
 		}
 		if _, err := io.ReadFull(file, buf[:chunkLen]); err != nil {
-			return 0,err
+			return 0, err
 		}
 
 		chunk := buf[:chunkLen]

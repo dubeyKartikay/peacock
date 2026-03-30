@@ -4,18 +4,16 @@ import (
 	flag "github.com/spf13/pflag"
 )
 
-
-
 const (
-	rootUse             = "peacock [file]"
-	rootShort           = "Pretty JSON log viewer for stdin or tailed files"
-	configFlagUsage     = "Path to a custom config file"
-	followFlagName      = "follow"
-	numberOfLinesFlagName = "lines"
+	rootUse                    = "peacock [file]"
+	rootShort                  = "Pretty JSON log viewer for stdin or tailed files"
+	configFlagUsage            = "Path to a custom config file"
+	followFlagName             = "follow"
+	numberOfLinesFlagName      = "lines"
 	numberOfLinesFlagShorthand = "n"
-	numberOfLinesFlagUsage = ""
-	followFlagShorthand = "f"
-	followFlagUsage     = "Follow appended lines in file mode"
+	numberOfLinesFlagUsage     = ""
+	followFlagShorthand        = "f"
+	followFlagUsage            = "Follow appended lines in file mode"
 )
 
 func RegisterFlags(flagSet *flag.FlagSet) {
@@ -25,11 +23,11 @@ func RegisterFlags(flagSet *flag.FlagSet) {
 
 func ReadFlags(cfg *Config, flagSet *flag.FlagSet) (string, bool) {
 
-	fileFollow,err := flagSet.GetBool(followFlagName)
+	fileFollow, err := flagSet.GetBool(followFlagName)
 	if err != nil {
 		fileFollow = false
 	}
-	numberOfLines,err := flagSet.GetInt(numberOfLinesFlagName)
+	numberOfLines, err := flagSet.GetInt(numberOfLinesFlagName)
 	if err != nil {
 		numberOfLines = defaultFileTailLines
 	}
