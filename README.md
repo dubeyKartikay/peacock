@@ -27,16 +27,23 @@ kubectl logs -f my-pod | peacock
 peacock -f app.log
 ```
 
-#### Tail Vs Peacock
+#### Tail vs Peacock
 <img src="./assets/tail_vs_peacock.gif" style="max-width:100%"/>
 
+#### Follow Logs
+<img src="./assets/follow.gif" style="max-width:100%"/>
 
-#### Follow Logs in Peacock
-<img src="./assets/follow.gif"  style="max-width:100%"/>
+#### Pause / Resume
+<img src="./assets/pause.gif" style="max-width:100%"/>
 
-#### Pause / Resume Live Tail
+#### Filter Logs
+<img src="./assets/filter.gif" style="max-width:100%"/>
 
-<img src="./assets/follow_and_pause.gif" style="max-width:100%"/>
+#### Multiple Filters
+<img src="./assets/multiple_filters.gif" style="max-width:100%"/>
+
+#### Remove Last Filter
+<img src="./assets/remove_filter.gif" style="max-width:100%"/>
 
 ---
 
