@@ -5,10 +5,11 @@ import (
 )
 
 const (
-	keyFilterMode   = "/"
-	keyGoToBottom   = "G"
-	keyGoToTop      = "g"
-	keySpaceLiteral = "space"
+	keyFilterMode      = "/"
+	keyGoToBottom      = "G"
+	keyGoToTop         = "g"
+	keyRemoveLastFilter = "backspace"
+	keySpaceLiteral    = "space"
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -57,9 +58,10 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 				m.filterInput.Blur()
 				m = m.syncViewport(true)
 				return m, nil
-		case tea.KeyEnter:
+			case tea.KeyEnter:
 				m.filterActive = false
-				m.query = m.filterInput.Value()
+				q := m.filterInput.Value()
+			  m.filters = append(m.filters, q)
 				m = m.syncViewport(true)
 				return m, nil
 		}
@@ -79,7 +81,7 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case keyFilterMode:
 		m.filterActive = true
-		m.filterInput.SetValue(m.query)
+		m.filterInput.SetValue("")
 		m.filterInput.CursorEnd()
 		m = m.syncViewport(false)
 		cmd := m.filterInput.Focus()
@@ -87,8 +89,14 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case keyGoToTop:
 		m.viewport.GotoTop()
 		return m, nil
-	case keyGoToBottom :
+	case keyGoToBottom:
 		m.viewport.GotoBottom()
+		return m, nil
+	case keyRemoveLastFilter:
+		if len(m.filters) > 0 {
+			m.filters = m.filters[:len(m.filters)-1]
+			m = m.syncViewport(true)
+		}
 		return m, nil
 	}
 

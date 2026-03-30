@@ -7,7 +7,6 @@ import (
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
-
 	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 	"github.com/dubeyKartikay/peacock/internal/logs"
 )
@@ -33,6 +32,8 @@ type SourceErrMsg struct {
 
 type SourceDoneMsg struct{}
 
+type Filters []string
+
 type model struct {
 	sourceName         string
 	width              int
@@ -41,14 +42,15 @@ type model struct {
 	viewport           viewport.Model
 	filterInput        textinput.Model
 	styles             styles
-	visibleEntries     []logs.Entry
+	inBufferEntries    []logs.Entry
+	visibleEntries     []*logs.Entry
   queuedEntries      []logs.Entry
 	paused             bool
 	filterActive       bool
 	sourceDone         bool
 	sourceErr          error
 	query              string
-	filters            []string
+	filters            Filters
 }
 
 func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
@@ -75,10 +77,10 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) appendEntry(entries ...logs.Entry) model {
-	m.visibleEntries = append(m.visibleEntries, entries...)
-	if len(m.visibleEntries) > m.cfg.Buffer.MaxEntries {
-		trim := len(m.visibleEntries) - m.cfg.Buffer.MaxEntries
-		m.visibleEntries = append([]logs.Entry(nil), m.visibleEntries[trim:]...)
+	m.inBufferEntries = append(m.inBufferEntries, entries...)
+	if len(m.inBufferEntries) > m.cfg.Buffer.MaxEntries {
+		trim := len(m.inBufferEntries) - m.cfg.Buffer.MaxEntries
+		m.inBufferEntries = append([]logs.Entry(nil), m.inBufferEntries[trim:]...)
 	}
 	return m
 }
@@ -92,42 +94,40 @@ func (m model) queueEntry(entry logs.Entry) model {
 	return m
 }
 
-func (m model) filteredEntryIndexes() []int {
+func (m model) filteredEntryIndexes() []*logs.Entry {
+	filtered := make([]*logs.Entry, 0, len(m.inBufferEntries))
+
 	if len(m.filters) == 0 {
-		return []int{}
-	}
-	filtered := make([]int, 0, len(m.visibleEntries))
-	for index, entry := range m.visibleEntries {
-		if strings.Contains(entry.Search, m.query) {
-			filtered = append(filtered, index)
+		for index := range m.inBufferEntries {
+			filtered = append(filtered, &m.inBufferEntries[index])
 		}
+		return filtered
 	}
-	if len(filtered) == 0 {
-		return []int{noResultIndex}
+
+	for index := range m.inBufferEntries {
+		allMatched := true
+		for _, f := range m.filters {
+			if !strings.Contains(m.inBufferEntries[index].Search, f) {
+				allMatched = false
+				break
+			}
+		}
+		if allMatched {
+			filtered = append(filtered, &m.inBufferEntries[index])
+		}
 	}
 
 	return filtered
 }
 
-func (m model) contentLines() []string {
+
+func (m *model) contentLines() []string {
 	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
-	if m.query == "" {
-		lines := make([]string, 0, len(m.visibleEntries))
-		for index := range m.visibleEntries {
-			rendered, renderedHeight := m.styles.renderEntry(m.visibleEntries[index], width)
-			m.visibleEntries[index].SetRenderHeight(renderedHeight) 
-			lines = append(lines, rendered)
-		}
-		return lines
-	}
 
-	entryIndexes := m.filteredEntryIndexes()
-	if isNoResultFilter(entryIndexes) {
-		return nil
-	}
+	m.visibleEntries = m.filteredEntryIndexes()
 
-	lines := make([]string, 0, len(entryIndexes))
-	for _, index := range entryIndexes {
+	lines := make([]string, 0, len(m.visibleEntries))
+	for index := range m.visibleEntries {
 		rendered, renderedHeight := m.styles.renderEntry(m.visibleEntries[index], width)
 		m.visibleEntries[index].SetRenderHeight(renderedHeight) 
 		lines = append(lines, rendered)
@@ -136,16 +136,7 @@ func (m model) contentLines() []string {
 }
 
 func (m model) visibleEntryCount() int {
-	if m.query == "" {
-		return len(m.visibleEntries)
-	}
-
-	indexes := m.filteredEntryIndexes()
-	if isNoResultFilter(indexes) {
-		return 0
-	}
-
-	return len(indexes)
+	return len(m.visibleEntries)
 }
 
 func isNoResultFilter(indexes []int) bool {
@@ -173,7 +164,7 @@ func (m model) totalHeight() int {
 	}
 	if !m.cfg.Source.FileFollow {
 		total := 0
-		for _, e := range m.visibleEntries {
+		for _, e := range m.inBufferEntries {
 			total += e.ContentHeight()
 		}
 		maxHeight := max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
@@ -185,7 +176,7 @@ func (m model) totalHeight() int {
 
 func (m model) contentHeight() int {
 	total := 0
-	for _, e := range m.visibleEntries {
+	for _, e := range m.inBufferEntries {
 		total += e.ContentHeight()
 	}
 	return total

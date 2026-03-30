@@ -35,6 +35,7 @@ type statusStyles struct {
 	paused  lipgloss.Style
 	done    lipgloss.Style
 	source  lipgloss.Style
+	filter  lipgloss.Style
 	entries lipgloss.Style
 	visible    lipgloss.Style
 	err     lipgloss.Style
@@ -67,13 +68,14 @@ func defaultStatusStyles(cfg appconfig.ThemeConfig) statusStyles {
 		paused:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelWarn)).PaddingRight(generalPadding),
 		done:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelOther)).PaddingRight(generalPadding),
 		source:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.CallerFG)).PaddingRight(generalPadding),
+		filter:  lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.FilterFG)).Background(lipgloss.Color(cfg.FilterBG)).PaddingLeft(generalPadding).PaddingRight(generalPadding).MarginLeft(generalPadding),
 		entries: lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.StatusFG)).PaddingRight(generalPadding),
 		help:    lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.StatusFG)).PaddingLeft(generalPadding).Faint(true),
 		err:     lipgloss.NewStyle().Foreground(lipgloss.Color(cfg.LevelError)).PaddingRight(generalPadding),
 	}
 }
 
-func (s styles) renderEntry(entry logs.Entry, width int) (string,int) {
+func (s styles) renderEntry(entry *logs.Entry, width int) (string,int) {
 	if(!entry.Parsed) {
 		return entry.Raw, lipgloss.Height(entry.Raw)
 	}

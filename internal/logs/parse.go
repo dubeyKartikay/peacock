@@ -149,3 +149,4 @@ func buildSearchText(entry Entry) string {
 	parts := []string{entry.Timestamp.Text, entry.Level.Text, entry.Message.Text, entry.Caller.Text, entry.Context.Text}
 	return strings.Join(parts, lineJoinSeparator)
 }
+

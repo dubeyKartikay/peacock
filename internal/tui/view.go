@@ -17,7 +17,7 @@ const (
 	sourceLabelFormat = "%s  source:%s"
 	stateLabelFormat  = "%s  entries:%d  visible:%d"
 	statusErrorFormat = "%s  err:%s"
-	statusHelpText    = "pause: space  quit: ctrl+c  filter: /"
+	statusHelpText    = "pause: space  quit: ctrl+c  filter: /  remove filter: backspace"
 )
 
 func (m model) View() tea.View {
@@ -49,7 +49,7 @@ func (m model) renderStatus() string {
 	} else if m.sourceDone {
 		state = statusStyle.done.Render(doneStateLabel)
 	}
-	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d",m.visibleEntryCount(), len(m.visibleEntries) + len(m.queuedEntries)))
+	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d",m.visibleEntryCount(), len(m.inBufferEntries) + len(m.queuedEntries)))
 	if m.sourceErr != nil {
 		entries = statusStyle.err.Render(entries)
 	}
@@ -61,10 +61,11 @@ func (m model) renderStatus() string {
 	}
 	left = lipgloss.JoinHorizontal(lipgloss.Left, state, left, entries)
 
-	if m.query != "" {
-		query := statusStyle.source.Render(m.query)
-		left = lipgloss.JoinHorizontal(lipgloss.Left, left, query)
+	for entry := range m.filters {
+		filter := statusStyle.filter.Render(m.filters[entry])
+		left = lipgloss.JoinHorizontal(lipgloss.Left, left, filter)
 	}
+
 	if m.sourceErr != nil {
 		sourceErr := statusStyle.source.Render(m.sourceErr.Error())
 		left = lipgloss.JoinHorizontal(lipgloss.Left, left, sourceErr)

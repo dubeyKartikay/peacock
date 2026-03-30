@@ -108,8 +108,9 @@ your-app | peacock
 | Key | Action |
 |-----|--------|
 | `Space` | Pause / resume live tail |
-| `/` | Enter filter mode |
+| `/` | Enter filter mode (press `Enter` to apply) |
 | `Esc` | Clear filter and exit filter mode |
+| `Backspace` | Remove last active filter |
 | `g` | Jump to top |
 | `G` | Jump to bottom |
 | `PageUp` / `Ctrl+B` | Scroll up one page |
