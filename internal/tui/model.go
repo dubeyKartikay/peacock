@@ -2,7 +2,7 @@ package tui
 
 import (
 	"strings"
-
+	"slices"
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
@@ -107,7 +107,6 @@ func (m model) filteredEntryIndexes() []*logs.Entry {
 	}
 
 	for i := len(m.inBufferEntries) - 1; i>=0 && len(filtered) < nMaxEntries ; i--{
-
 		allMatched := true
 		for _, f := range m.filters {
 			if !strings.Contains(m.inBufferEntries[i].Search, f) {
@@ -120,7 +119,7 @@ func (m model) filteredEntryIndexes() []*logs.Entry {
 		}
 
 	}
-
+	slices.Reverse(filtered)
 	return filtered
 }
 
