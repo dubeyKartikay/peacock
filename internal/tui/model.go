@@ -96,27 +96,29 @@ func (m model) queueEntry(entry logs.Entry) model {
 func (m model) filteredEntryIndexes() []*logs.Entry {
 
 	nMaxEntries := min(len(m.inBufferEntries),max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize()))
-	onScreenEntries := m.inBufferEntries[len(m.inBufferEntries)-nMaxEntries:]
-	filtered := make([]*logs.Entry, 0, len(onScreenEntries))
+	filtered := make([]*logs.Entry, 0, nMaxEntries)
 
 	if len(m.filters) == 0 {
+		onScreenEntries := m.inBufferEntries[len(m.inBufferEntries)-nMaxEntries:]
 		for index := range onScreenEntries {
 			filtered = append(filtered, &onScreenEntries[index])
 		}
 		return filtered
 	}
 
-	for index := range onScreenEntries {
+	for i := len(m.inBufferEntries) - 1; i>=0 && len(filtered) < nMaxEntries ; i--{
+
 		allMatched := true
 		for _, f := range m.filters {
-			if !strings.Contains(onScreenEntries[index].Search, f) {
+			if !strings.Contains(m.inBufferEntries[i].Search, f) {
 				allMatched = false
 				break
 			}
 		}
 		if allMatched {
-			filtered = append(filtered, &onScreenEntries[index])
+			filtered = append(filtered, &m.inBufferEntries[i])
 		}
+
 	}
 
 	return filtered
