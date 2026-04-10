@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gofmt:*)",
+      "Bash(grep:*)",
+      "Skill(gstack-benchmark)",
+      "Bash(go build:*)"
+    ]
+  }
+}
