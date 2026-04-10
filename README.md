@@ -1,21 +1,15 @@
 <div align="center">
+  <img width="500" src="./docs/assets/peacock.png" alt="Peacock logo" />
   <h1>Peacock</h1>
+  <p>A charming <code>tail</code> replacement for developers</p>
+  <p>
+    <a href="https://go.dev/"><img src="https://img.shields.io/github/go-mod/go-version/dubeyKartikay/peacock" alt="Go version"/></a>
+    <a href="https://github.com/dubeyKartikay/peacock/releases"><img src="https://img.shields.io/github/v/release/dubeyKartikay/peacock" alt="Latest release"/></a>
+    <a href="./LICENSE"><img src="https://img.shields.io/github/license/dubeyKartikay/peacock" alt="License"/></a>
+    <a href="https://goreportcard.com/report/github.com/dubeyKartikay/peacock"><img src="https://goreportcard.com/badge/github.com/dubeyKartikay/peacock" alt="Go Report Card"/></a>
+    <a href="https://github.com/charmbracelet/bubbletea"><img src="https://img.shields.io/badge/built%20with-Bubble%20Tea-ff69b4" alt="Built with Bubble Tea"/></a>
+  </p>
 </div>
-
-<p align="center">
-  <img width="500" src="./assets/peacock.png" style="max-width:500px;display:block;margin:auto"/>
-</p>
-
-<div align="center">
-  A charming <code>tail</code> replacement for developers
-</div>
-
-<p align="center">
-  <a href="https://go.dev/"><img src="https://img.shields.io/github/go-mod/go-version/dubeyKartikay/peacock" alt="Go version"/></a>
-  <a href="https://github.com/dubeyKartikay/peacock/releases"><img src="https://img.shields.io/github/v/release/dubeyKartikay/peacock" alt="Latest release"/></a>
-  <a href="./LICENSE"><img src="https://img.shields.io/github/license/dubeyKartikay/peacock" alt="License"/></a>
-  <a href="https://goreportcard.com/report/github.com/dubeyKartikay/peacock"><img src="https://goreportcard.com/badge/github.com/dubeyKartikay/peacock" alt="Go Report Card"/></a>
-</p>
 
 Pipe your JSON log output into peacock and get colorized, readable, filterable log streams in the terminal.
 
