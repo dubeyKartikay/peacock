@@ -13,8 +13,24 @@ import (
 
 var ansiPattern = regexp.MustCompile(`\x1b\[[0-9;]*m`)
 
+func TestEntryRingEvictsOldest(t *testing.T) {
+	ring := newEntryRing(3)
+	ring.AppendBatch([]logs.Entry{
+		testEntry("first"),
+		testEntry("second"),
+		testEntry("third"),
+		testEntry("fourth"),
+	})
+
+	got := ringMessages(ring.Newest(0))
+	want := []string{"second", "third", "fourth"}
+	if strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Fatalf("unexpected ring order: got %v want %v", got, want)
+	}
+}
+
 func TestPauseBuffersNewEntriesUntilResume(t *testing.T) {
-	m := newSizedModel()
+	m := newSizedModel(appconfig.DefaultConfig())
 	m = updateModel(t, m, EntryMsg{Entry: logs.ParseLine(`{"level":"info","time":"2026-03-25T12:00:00Z","message":"first"}`)})
 
 	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeySpace})
@@ -24,8 +40,8 @@ func TestPauseBuffersNewEntriesUntilResume(t *testing.T) {
 	pausedView := stripANSI(m.viewport.View())
 
 	m = updateModel(t, m, EntryMsg{Entry: logs.ParseLine(`{"level":"error","time":"2026-03-25T12:00:01Z","message":"second"}`)})
-	if m.pendingWhilePaused != 1 {
-		t.Fatalf("expected 1 buffered entry, got %d", m.pendingWhilePaused)
+	if got := m.queuedEntries.Len(); got != 1 {
+		t.Fatalf("expected 1 queued entry, got %d", got)
 	}
 	if got := stripANSI(m.viewport.View()); got != pausedView {
 		t.Fatalf("expected paused viewport to stay frozen\nwant: %q\n got: %q", pausedView, got)
@@ -35,76 +51,76 @@ func TestPauseBuffersNewEntriesUntilResume(t *testing.T) {
 	if m.paused {
 		t.Fatal("expected model to resume after second space")
 	}
-	if m.pendingWhilePaused != 0 {
-		t.Fatalf("expected pending count to reset, got %d", m.pendingWhilePaused)
+	if got := m.queuedEntries.Len(); got != 0 {
+		t.Fatalf("expected queued entries to flush on resume, got %d", got)
 	}
 	if got := stripANSI(m.viewport.View()); !strings.Contains(got, "second") {
 		t.Fatalf("expected resumed viewport to include buffered entry, got %q", got)
 	}
 }
 
-func TestSlashFilterUsesLiteralSubstringMatching(t *testing.T) {
-	m := newSizedModel()
+func TestResumeFlushPreservesQueuedOrderWithinCapacity(t *testing.T) {
+	cfg := appconfig.DefaultConfig()
+	cfg.Buffer.MaxEntries = 3
+
+	m := newSizedModel(cfg)
+	for _, message := range []string{"first", "second", "third", "fourth"} {
+		m = updateModel(t, m, EntryMsg{Entry: logs.ParseLine(`{"level":"info","time":"2026-03-25T12:00:00Z","message":"` + message + `"}`)})
+		if message == "first" {
+			m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeySpace})
+		}
+	}
+
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeySpace})
+
+	got := ringMessages(m.inBufferEntries.Newest(0))
+	want := []string{"second", "third", "fourth"}
+	if strings.Join(got, ",") != strings.Join(want, ",") {
+		t.Fatalf("unexpected resumed order: got %v want %v", got, want)
+	}
+}
+
+func TestFilterUsesLiteralSubstringMatching(t *testing.T) {
+	m := newSizedModel(appconfig.DefaultConfig())
 	m = updateModel(t, m, EntryMsg{Entry: logs.ParseLine(`{"level":"info","time":"2026-03-25T12:00:00Z","message":"health check ok"}`)})
 	m = updateModel(t, m, EntryMsg{Entry: logs.ParseLine(`{"level":"error","time":"2026-03-25T12:00:01Z","message":"database timeout"}`)})
 
 	m = updateModel(t, m, tea.KeyPressMsg{Code: '/', Text: "/"})
-	m = updateModel(t, m, tea.KeyPressMsg{Code: 't', Text: "t"})
-	m = updateModel(t, m, tea.KeyPressMsg{Code: 'i', Text: "i"})
-	m = updateModel(t, m, tea.KeyPressMsg{Code: 'm', Text: "m"})
-	m = updateModel(t, m, tea.KeyPressMsg{Code: 'e', Text: "e"})
-	m = updateModel(t, m, tea.KeyPressMsg{Code: 'o', Text: "o"})
-	m = updateModel(t, m, tea.KeyPressMsg{Code: 'u', Text: "u"})
-	m = updateModel(t, m, tea.KeyPressMsg{Code: 't', Text: "t"})
+	for _, key := range []tea.KeyPressMsg{
+		{Code: 't', Text: "t"},
+		{Code: 'i', Text: "i"},
+		{Code: 'm', Text: "m"},
+		{Code: 'e', Text: "e"},
+		{Code: 'o', Text: "o"},
+		{Code: 'u', Text: "u"},
+		{Code: 't', Text: "t"},
+	} {
+		m = updateModel(t, m, key)
+	}
+	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyEnter})
 
-	if !m.filterActive {
-		t.Fatal("expected filter mode to be active")
+	if got, want := len(m.filters), 1; got != want {
+		t.Fatalf("expected %d active filter, got %d", want, got)
 	}
-	if m.query != "timeout" {
-		t.Fatalf("expected query timeout, got %q", m.query)
+	if got := m.filters[0]; got != "timeout" {
+		t.Fatalf("expected timeout filter, got %q", got)
 	}
-	filtered := m.filteredEntryIndexes()
+
+	filtered := m.filteredEntries(0)
 	if got, want := len(filtered), 1; got != want {
 		t.Fatalf("expected %d filtered entry, got %d", want, got)
 	}
-	if filtered[0] != 1 {
-		t.Fatalf("expected filtered index 1, got %d", filtered[0])
-	}
-	if m.visibleEntries[filtered[0]].Message != "database timeout" {
-		t.Fatalf("unexpected filtered message %q", m.visibleEntries[filtered[0]].Message)
-	}
-
-	m = updateModel(t, m, tea.KeyPressMsg{Code: tea.KeyEsc})
-	if m.filterActive || m.query != "" {
-		t.Fatalf("expected escape to clear filter, got active=%v query=%q", m.filterActive, m.query)
-	}
-	if filtered := m.filteredEntryIndexes(); len(filtered) != 0 {
-		t.Fatalf("expected no active filter to return empty indexes, got %#v", filtered)
+	if got := filtered[0].Message.Text; got != "database timeout" {
+		t.Fatalf("unexpected filtered message %q", got)
 	}
 }
 
-func TestActiveFilterWithNoMatchesUsesSentinelIndex(t *testing.T) {
-	m := newSizedModel()
-	m = updateModel(t, m, EntryMsg{Entry: logs.ParseLine(`{"level":"info","time":"2026-03-25T12:00:00Z","message":"health check ok"}`)})
-
-	m.query = "zzz"
-	filtered := m.filteredEntryIndexes()
-	if got, want := len(filtered), 1; got != want {
-		t.Fatalf("expected %d sentinel index, got %d", want, got)
-	}
-	if filtered[0] != noResultIndex {
-		t.Fatalf("expected sentinel index %d, got %d", noResultIndex, filtered[0])
-	}
-	if got := m.visibleEntryCount(); got != 0 {
-		t.Fatalf("expected zero visible entries, got %d", got)
-	}
-}
-
-func newSizedModel() model {
-	m := NewModel("stdin", appconfig.DefaultConfig()).(model)
+func newSizedModel(cfg appconfig.Config) model {
+	m := NewModel("stdin", cfg).(model)
 	m.width = 80
 	m.height = 20
-	return m.syncViewport(true)
+	m.syncViewport(true)
+	return m
 }
 
 func updateModel(t *testing.T, m model, msg tea.Msg) model {
@@ -115,6 +131,21 @@ func updateModel(t *testing.T, m model, msg tea.Msg) model {
 		t.Fatal("expected concrete model result")
 	}
 	return result
+}
+
+func ringMessages(entries []*logs.Entry) []string {
+	messages := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		messages = append(messages, entry.Message.Text)
+	}
+	return messages
+}
+
+func testEntry(message string) logs.Entry {
+	return logs.Entry{
+		Message: logs.Part{Text: message},
+		Search:  message,
+	}
 }
 
 func stripANSI(text string) string {
