@@ -7,3 +7,6 @@ build:
 
 test:
 	go test ./...
+
+stress: build
+	go run ./testdata/stress-test/main.go | ./target/peacock
