@@ -1,3 +1,7 @@
 target/
 # Added by goreleaser init:
 dist/
+*.prof
+TESTING*
+*OPTIMIZATION*
+*RESULTS*
