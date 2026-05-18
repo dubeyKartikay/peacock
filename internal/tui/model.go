@@ -101,7 +101,7 @@ func (m model) filteredEntries(limit int) []*logs.Entry {
 
 	m.inBufferEntries.ReverseRange(func(entry *logs.Entry) bool {
 
-		if limit <= 0 || len(filtered) >= limit-1 {
+		if(limit <= 0  || len(filtered) >= limit-1){
 			return false
 		}
 		for _, filter := range m.filters {
@@ -123,7 +123,8 @@ func (m *model) contentLines(limit int) []string {
 
 	lines := make([]string, 0, len(m.visibleEntries))
 	for index := range m.visibleEntries {
-		rendered := m.styles.renderEntry(m.visibleEntries[index], width)
+		rendered, renderedHeight := m.styles.renderEntry(m.visibleEntries[index], width)
+		m.visibleEntries[index].SetRenderHeight(renderedHeight)
 		lines = append(lines, rendered)
 	}
 	return lines
@@ -143,12 +144,12 @@ func (m model) liveEntryLimit() int {
 
 func (m *model) syncViewport(stickBottom bool) {
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
+	viewportHeight := m.totalHeight()
 	contentLimit := m.liveEntryLimit()
 	if m.paused {
 		contentLimit = 0
 	}
 	content := m.contentLines(contentLimit)
-	viewportHeight := m.totalHeight(contentWidth)
 
 	m.viewport.SetWidth(contentWidth)
 	m.viewport.SetHeight(viewportHeight)
@@ -159,7 +160,7 @@ func (m *model) syncViewport(stickBottom bool) {
 	}
 }
 
-func (m model) totalHeight(width int) int {
+func (m model) totalHeight() int {
 	filterLines := 0
 	if m.filterActive {
 		filterLines = filterLineCount
@@ -167,12 +168,7 @@ func (m model) totalHeight(width int) int {
 	if !m.cfg.Source.FileFollow {
 		total := 0
 		m.inBufferEntries.Range(func(entry *logs.Entry) bool {
-			height, ok := entry.GetCachedHeight(width)
-			if !ok {
-				m.styles.renderEntry(entry, width)
-				height, _ = entry.GetCachedHeight(width)
-			}
-			total += height
+			total += entry.ContentHeight()
 			return true
 		})
 		maxHeight := max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
@@ -182,15 +178,10 @@ func (m model) totalHeight(width int) int {
 	return max(minViewportDimension, height)
 }
 
-func (m model) contentHeight(width int) int {
+func (m model) contentHeight() int {
 	total := 0
 	m.inBufferEntries.Range(func(entry *logs.Entry) bool {
-		height, ok := entry.GetCachedHeight(width)
-		if !ok {
-			m.styles.renderEntry(entry, width)
-			height, _ = entry.GetCachedHeight(width)
-		}
-		total += height
+		total += entry.ContentHeight()
 		return true
 	})
 	return total

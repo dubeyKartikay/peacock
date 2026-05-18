@@ -75,13 +75,9 @@ func defaultStatusStyles(cfg appconfig.ThemeConfig) statusStyles {
 	}
 }
 
-func (s styles) renderEntry(entry *logs.Entry, width int) string {
-	if cached, ok := entry.GetCachedRender(width); ok {
-		return cached
-	}
+func (s styles) renderEntry(entry *logs.Entry, width int) (string, int) {
 	if !entry.Parsed {
-		entry.CacheRenderedString(width, entry.Raw, lipgloss.Height(entry.Raw))
-		return entry.Raw
+		return entry.Raw, lipgloss.Height(entry.Raw)
 	}
 	logMetadata := ""
 	content := ""
@@ -94,8 +90,7 @@ func (s styles) renderEntry(entry *logs.Entry, width int) string {
 	content = lipgloss.JoinHorizontal(lipgloss.Left, content, s.renderPart(entry.Context))
 
 	view := logs.WrapHorizontalOverflow(logMetadata, content, width)
-	entry.CacheRenderedString(width, view, lipgloss.Height(view))
-	return view
+	return view, lipgloss.Height(view)
 }
 
 func (s styles) renderPart(part logs.Part) string {
