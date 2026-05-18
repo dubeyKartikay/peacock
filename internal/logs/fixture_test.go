@@ -27,8 +27,10 @@ func TestRedactedFixtureStaysParseable(t *testing.T) {
 		if !entry.Parsed {
 			t.Fatalf("expected fixture line %d to parse as JSON", lines)
 		}
-		if strings.Contains(entry.Context.Text, "access_token=[REDACTED]") {
-			redactions++
+		for _, field := range entry.Context {
+			if field.Key == "access_token" && field.Value == "[REDACTED]" {
+				redactions++
+			}
 		}
 	}
 	if err := scanner.Err(); err != nil {

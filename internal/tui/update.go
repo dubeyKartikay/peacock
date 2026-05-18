@@ -2,7 +2,6 @@ package tui
 
 import (
 	tea "charm.land/bubbletea/v2"
-	"github.com/dubeyKartikay/peacock/internal/logs"
 )
 
 const (
@@ -78,11 +77,8 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.syncViewport(true)
 			return m, nil
 		}
-		m.queuedEntries.Range(func(entry *logs.Entry) bool {
-			m.inBufferEntries.Append(*entry)
-			return true
-		})
-		m.queuedEntries.Reset()
+		m = m.appendEntry(m.queuedEntries...)
+		m.queuedEntries = nil
 		m.syncViewport(true)
 		return m, nil
 	case keyFilterMode:

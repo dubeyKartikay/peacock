@@ -1,9 +1,6 @@
 package logs
 
-import (
-	"strings"
-	"testing"
-)
+import "testing"
 
 func TestParseLineExtractsCanonicalFields(t *testing.T) {
 	entry := ParseLine(`{"level":"warn","time":"2026-03-25T12:00:00Z","message":"disk almost full","caller":"main.go:42","host":"prod-1","retry":3}`)
@@ -11,41 +8,42 @@ func TestParseLineExtractsCanonicalFields(t *testing.T) {
 	if !entry.Parsed {
 		t.Fatal("expected JSON log line to parse")
 	}
-	if got := entry.Level.Text; got != "warn" {
-		t.Fatalf("expected warn level, got %q", got)
+	if entry.Level != "warn" {
+		t.Fatalf("expected warn level, got %q", entry.Level)
 	}
-	if got := entry.Timestamp.Text; got != "2026-03-25T12:00:00Z" {
-		t.Fatalf("unexpected timestamp %q", got)
+	if entry.Timestamp != "2026-03-25T12:00:00Z" {
+		t.Fatalf("unexpected timestamp %q", entry.Timestamp)
 	}
-	if got := entry.Message.Text; got != "disk almost full" {
-		t.Fatalf("unexpected message %q", got)
+	if entry.Message != "disk almost full" {
+		t.Fatalf("unexpected message %q", entry.Message)
 	}
-	if got := entry.Caller.Text; got != "main.go:42" {
-		t.Fatalf("unexpected caller %q", got)
+	if entry.Caller != "main.go:42" {
+		t.Fatalf("unexpected caller %q", entry.Caller)
 	}
-	for _, fragment := range []string{"host=prod-1", "retry=3"} {
-		if !strings.Contains(entry.Context.Text, fragment) {
-			t.Fatalf("expected context to contain %q, got %q", fragment, entry.Context.Text)
-		}
+	if got, want := len(entry.Context), 2; got != want {
+		t.Fatalf("expected %d context fields, got %d", want, got)
+	}
+	if entry.Context[0].Key != "host" || entry.Context[0].Value != "prod-1" {
+		t.Fatalf("unexpected first context field %#v", entry.Context[0])
+	}
+	if entry.Context[1].Key != "retry" || entry.Context[1].Value != "3" {
+		t.Fatalf("unexpected second context field %#v", entry.Context[1])
 	}
 }
 
 func TestParseLineSupportsAliasesAndRawFallback(t *testing.T) {
-	aliased := ParseLine(`{"level":"info","timestamp":"2026-03-25T12:00:00Z","msg":"hello","file":"app.go:9","request_id":"abc 123"}`)
+	aliased := ParseLine(`{"level":"INFO","timestamp":"2026-03-25T12:00:00Z","msg":"hello","file":"app.go:9","request_id":"abc 123"}`)
 	if !aliased.Parsed {
 		t.Fatal("expected aliased JSON log line to parse")
 	}
-	if got := aliased.Level.Text; got != "info" {
-		t.Fatalf("expected info level, got %q", got)
+	if aliased.Level != "info" {
+		t.Fatalf("expected normalized info level, got %q", aliased.Level)
 	}
-	if got := aliased.Message.Text; got != "hello" {
-		t.Fatalf("unexpected aliased message %q", got)
+	if aliased.Message != "hello" || aliased.Caller != "app.go:9" {
+		t.Fatalf("unexpected aliased extraction: %#v", aliased)
 	}
-	if got := aliased.Caller.Text; got != "app.go:9" {
-		t.Fatalf("unexpected aliased caller %q", got)
-	}
-	if !strings.Contains(aliased.Context.Text, `request_id="abc 123"`) {
-		t.Fatalf("expected quoted request id, got %q", aliased.Context.Text)
+	if aliased.Context[0].Value != `"abc 123"` {
+		t.Fatalf("expected spaced string to be quoted, got %q", aliased.Context[0].Value)
 	}
 
 	raw := ParseLine(`not-json-at-all`)
