@@ -42,9 +42,9 @@ type model struct {
 	viewport        viewport.Model
 	filterInput     textinput.Model
 	styles          styles
-	inBufferEntries []logs.Entry
+	inBufferEntries entryRing
 	visibleEntries  []*logs.Entry
-	queuedEntries   []logs.Entry
+	queuedEntries   entryRing
 	paused          bool
 	filterActive    bool
 	sourceDone      bool
@@ -64,11 +64,13 @@ func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
 	vp.KeyMap.PageUp.SetKeys(viewportPageUpKey, viewportPageUpAltKey)
 
 	return model{
-		sourceName:  sourceName,
-		cfg:         cfg,
-		viewport:    vp,
-		filterInput: input,
-		styles:      defaultStyles(cfg.Theme),
+		sourceName:      sourceName,
+		cfg:             cfg,
+		viewport:        vp,
+		filterInput:     input,
+		styles:          defaultStyles(cfg.Theme),
+		inBufferEntries: newEntryRing(cfg.Buffer.MaxEntries),
+		queuedEntries:   newEntryRing(cfg.Buffer.MaxEntries),
 	}
 }
 
@@ -77,57 +79,39 @@ func (m model) Init() tea.Cmd {
 }
 
 func (m model) appendEntry(entries ...logs.Entry) model {
-	m.inBufferEntries = append(m.inBufferEntries, entries...)
-	if len(m.inBufferEntries) > m.cfg.Buffer.MaxEntries {
-		trim := len(m.inBufferEntries) - m.cfg.Buffer.MaxEntries
-		m.inBufferEntries = append([]logs.Entry(nil), m.inBufferEntries[trim:]...)
-	}
+	m.inBufferEntries.AppendBatch(entries)
 	return m
 }
 
 func (m model) queueEntry(entry logs.Entry) model {
-	m.queuedEntries = append(m.queuedEntries, entry)
-	if len(m.queuedEntries) > m.cfg.Buffer.MaxEntries {
-		trim := len(m.queuedEntries) - m.cfg.Buffer.MaxEntries
-		m.queuedEntries = append([]logs.Entry(nil), m.queuedEntries[trim:]...)
-	}
+	m.queuedEntries.Append(entry)
 	return m
 }
 
 func (m model) filteredEntries(limit int) []*logs.Entry {
-	maxEntries := len(m.inBufferEntries)
+	maxEntries := m.inBufferEntries.Len()
 	if limit > 0 {
 		maxEntries = min(maxEntries, limit)
 	}
 	filtered := make([]*logs.Entry, 0, maxEntries)
 
 	if len(m.filters) == 0 {
-		start := 0
-		if limit > 0 && len(m.inBufferEntries) > limit {
-			start = len(m.inBufferEntries) - limit
-		}
-		entries := m.inBufferEntries[start:]
-		for index := range entries {
-			filtered = append(filtered, &entries[index])
-		}
-		return filtered
+		return append(filtered, m.inBufferEntries.Newest(limit)...)
 	}
 
-	for i := len(m.inBufferEntries) - 1; i >= 0; i-- {
-		allMatched := true
-		for _, f := range m.filters {
-			if !strings.Contains(m.inBufferEntries[i].Search, f) {
-				allMatched = false
-				break
+	m.inBufferEntries.ReverseRange(func(entry *logs.Entry) bool {
+
+		if(limit <= 0  || len(filtered) >= limit-1){
+			return false
+		}
+		for _, filter := range m.filters {
+			if !strings.Contains(entry.Search, filter) {
+				return true
 			}
 		}
-		if allMatched {
-			filtered = append(filtered, &m.inBufferEntries[i])
-			if limit > 0 && len(filtered) >= limit {
-				break
-			}
-		}
-	}
+		filtered = append(filtered, entry)
+		return true
+	})
 	slices.Reverse(filtered)
 	return filtered
 }
@@ -183,9 +167,10 @@ func (m model) totalHeight() int {
 	}
 	if !m.cfg.Source.FileFollow {
 		total := 0
-		for _, e := range m.inBufferEntries {
-			total += e.ContentHeight()
-		}
+		m.inBufferEntries.Range(func(entry *logs.Entry) bool {
+			total += entry.ContentHeight()
+			return true
+		})
 		maxHeight := max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
 		return max(minViewportDimension, min(total, maxHeight))
 	}
@@ -195,8 +180,9 @@ func (m model) totalHeight() int {
 
 func (m model) contentHeight() int {
 	total := 0
-	for _, e := range m.inBufferEntries {
-		total += e.ContentHeight()
-	}
+	m.inBufferEntries.Range(func(entry *logs.Entry) bool {
+		total += entry.ContentHeight()
+		return true
+	})
 	return total
 }
