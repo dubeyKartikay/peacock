@@ -148,7 +148,7 @@ func (m* model) syncViewport(stickBottom bool) {
 	m.viewport.SetWidth(contentWidth)
 	m.viewport.SetHeight(contentHeight)
 	m.filterInput.SetWidth(max(minViewportDimension, m.width-m.styles.filterBar.GetHorizontalFrameSize()-2))
-	m.viewport.SetContentLines(content)
+	m.viewport.SetContentLines(content[:min(100,len(content))])
 	if stickBottom {
 		m.viewport.GotoBottom()
 	}
