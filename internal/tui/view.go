@@ -49,7 +49,7 @@ func (m *model) renderStatus() string {
 	} else if m.sourceDone {
 		state = statusStyle.done.Render(doneStateLabel)
 	}
-	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d", m.visibleEntryCount(), len(m.inBufferEntries)+len(m.queuedEntries)))
+	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d", m.visibleEntryCount(), m.inBufferEntries.Len()+m.queuedEntries.Len()))
 	if m.sourceErr != nil {
 		entries = statusStyle.err.Render(entries)
 	}
