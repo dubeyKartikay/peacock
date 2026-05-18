@@ -16,6 +16,7 @@ CPU_PROFILE="$OUT_DIR/peacock.cpu.prof"
 PPROF_TEXT="$OUT_DIR/peacock.pprof.txt"
 METRICS="$OUT_DIR/metrics.txt"
 TTY_LOG="$OUT_DIR/peacock.tty.log"
+LINE_COUNT="$OUT_DIR/processed-lines.txt"
 
 die() {
   printf 'error: %s\n' "$*" >&2
@@ -29,6 +30,15 @@ require() {
 write_metrics() {
   local status="$1"
   local status_text="$2"
+  local processed_lines="0"
+  local throughput_lines_per_second="0"
+
+  if [[ -s "$LINE_COUNT" ]]; then
+    read -r processed_lines < "$LINE_COUNT"
+  fi
+  if [[ "$elapsed_ms" -gt 0 ]]; then
+    throughput_lines_per_second=$((processed_lines * 1000 / elapsed_ms))
+  fi
 
   {
     printf 'started_at_epoch=%s\n' "$start_epoch"
@@ -38,6 +48,8 @@ write_metrics() {
     printf 'seed=%s\n' "$SEED"
     printf 'benchmark_name=%s\n' "$BENCHMARK_NAME"
     printf 'elapsed_ms=%s\n' "$elapsed_ms"
+    printf 'processed_lines=%s\n' "$processed_lines"
+    printf 'throughput_lines_per_second=%s\n' "$throughput_lines_per_second"
     printf 'benchmark_exit_status=%s\n' "$status"
     printf 'benchmark_status=%s\n' "$status_text"
     printf 'tty_log=%s\n' "$TTY_LOG"
@@ -63,9 +75,10 @@ PIPELINE='go run "$ROOT_DIR/testdata/stress-test/main.go" \
   -rate "$RATE" \
   -duration "$DURATION" \
   -seed "$SEED" \
+  | tee >(wc -l > "$LINE_COUNT") \
   | TERM=xterm-256color "$PEACOCK_BIN" --cpuprofile "$CPU_PROFILE"'
 
-export PIPELINE ROOT_DIR RATE DURATION SEED PEACOCK_BIN CPU_PROFILE
+export PIPELINE ROOT_DIR RATE DURATION SEED PEACOCK_BIN CPU_PROFILE LINE_COUNT
 
 set +e
 (sleep "$STOP_AFTER"; printf '\003') \
