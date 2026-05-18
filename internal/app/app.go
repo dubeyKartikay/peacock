@@ -36,8 +36,7 @@ func Run(options Options) error {
 		for event := range src.Events() {
 			switch {
 			case event.Line != nil:
-				entry := logs.ParseLine(*event.Line)
-				program.Send(tui.EntryMsg{Entry: entry})
+				program.Send(tui.EntryMsg{Entry: logs.ParseLine(*event.Line)})
 			case event.Err != nil:
 				program.Send(tui.SourceErrMsg{Err: event.Err})
 			case event.Done:
