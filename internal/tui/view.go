@@ -40,7 +40,7 @@ func (m model) View() tea.View {
 	return tea.View{Content: lipgloss.JoinVertical(lipgloss.Left, parts...)}
 }
 
-func (m model) renderStatus() string {
+func (m *model) renderStatus() string {
 	statusStyle := m.styles.status
 
 	state := statusStyle.live.Render(liveStateLabel)
