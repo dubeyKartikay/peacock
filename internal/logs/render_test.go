@@ -5,17 +5,21 @@ import (
 	"testing"
 )
 
-func TestWrapHorizontalOverflowPreservesMetadataAndContent(t *testing.T) {
-	got := WrapHorizontalOverflow("2026-03-25T12:00:00Z [error] ", "request failed caller=api.go:88 status=503", 80)
+func TestRenderPlainFormatsStructuredLogs(t *testing.T) {
+	entry := ParseLine(`{"level":"error","time":"2026-03-25T12:00:00Z","message":"request failed","caller":"api.go:88","status":503,"url":"https://example.com"}`)
 
-	for _, fragment := range []string{
-		"2026-03-25T12:00:00Z [error]",
+	plain := RenderPlain(entry)
+	checks := []string{
+		"2026-03-25T12:00:00Z ",
+		"[error] ",
 		"request failed",
-		"caller=api.go:88",
-		"status=503",
-	} {
-		if !strings.Contains(got, fragment) {
-			t.Fatalf("expected %q in %q", fragment, got)
+		" caller=api.go:88",
+		" status=503",
+		" url=https://example.com",
+	}
+	for _, check := range checks {
+		if !strings.Contains(plain, check) {
+			t.Fatalf("expected %q in %q", check, plain)
 		}
 	}
 }
