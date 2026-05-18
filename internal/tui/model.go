@@ -2,7 +2,7 @@ package tui
 
 import (
 	"strings"
-
+	"slices"
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
@@ -94,28 +94,32 @@ func (m model) queueEntry(entry logs.Entry) model {
 }
 
 func (m model) filteredEntryIndexes() []*logs.Entry {
-	filtered := make([]*logs.Entry, 0, len(m.inBufferEntries))
+
+	nMaxEntries := min(len(m.inBufferEntries),max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize()))
+	filtered := make([]*logs.Entry, 0, nMaxEntries)
 
 	if len(m.filters) == 0 {
-		for index := range m.inBufferEntries {
-			filtered = append(filtered, &m.inBufferEntries[index])
+		onScreenEntries := m.inBufferEntries[len(m.inBufferEntries)-nMaxEntries:]
+		for index := range onScreenEntries {
+			filtered = append(filtered, &onScreenEntries[index])
 		}
 		return filtered
 	}
 
-	for index := range m.inBufferEntries {
+	for i := len(m.inBufferEntries) - 1; i>=0 && len(filtered) < nMaxEntries ; i--{
 		allMatched := true
 		for _, f := range m.filters {
-			if !strings.Contains(m.inBufferEntries[index].Search, f) {
+			if !strings.Contains(m.inBufferEntries[i].Search, f) {
 				allMatched = false
 				break
 			}
 		}
 		if allMatched {
-			filtered = append(filtered, &m.inBufferEntries[index])
+			filtered = append(filtered, &m.inBufferEntries[i])
 		}
-	}
 
+	}
+	slices.Reverse(filtered)
 	return filtered
 }
 
@@ -145,10 +149,11 @@ func (m* model) syncViewport(stickBottom bool) {
 	content := m.contentLines()
 	contentHeight := m.totalHeight()
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
+	maxVisibleLines := max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
 	m.viewport.SetWidth(contentWidth)
 	m.viewport.SetHeight(contentHeight)
 	m.filterInput.SetWidth(max(minViewportDimension, m.width-m.styles.filterBar.GetHorizontalFrameSize()-2))
-	m.viewport.SetContentLines(content[:min(100,len(content))])
+	m.viewport.SetContentLines(content[:min(maxVisibleLines,len(content))])
 	if stickBottom {
 		m.viewport.GotoBottom()
 	}
