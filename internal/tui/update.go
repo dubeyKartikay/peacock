@@ -17,7 +17,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		m.syncViewport(true)
+		m.syncViewport(!m.paused)
 		return m, nil
 	case EntryMsg:
 		if m.paused {
@@ -56,13 +56,13 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		case tea.KeyEsc:
 			m.filterActive = false
 			m.filterInput.Blur()
-			m.syncViewport(true)
+			m.syncViewport(!m.paused)
 			return m, nil
 		case tea.KeyEnter:
 			m.filterActive = false
 			q := m.filterInput.Value()
 			m.filters = append(m.filters, q)
-			m.syncViewport(true)
+			m.syncViewport(!m.paused)
 			return m, nil
 		}
 		var cmd tea.Cmd
@@ -73,11 +73,13 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	switch msg.String() {
 	case keySpaceLiteral:
 		m.paused = !m.paused
-		if !m.paused {
-			m = m.appendEntry(m.queuedEntries...)
-			m.queuedEntries = nil
+		if m.paused {
 			m.syncViewport(true)
+			return m, nil
 		}
+		m = m.appendEntry(m.queuedEntries...)
+		m.queuedEntries = nil
+		m.syncViewport(true)
 		return m, nil
 	case keyFilterMode:
 		m.filterActive = true
@@ -95,7 +97,7 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case keyRemoveLastFilter:
 		if len(m.filters) > 0 {
 			m.filters = m.filters[:len(m.filters)-1]
-			m.syncViewport(true)
+			m.syncViewport(!m.paused)
 		}
 		return m, nil
 	}

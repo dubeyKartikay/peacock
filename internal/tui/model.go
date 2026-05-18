@@ -1,8 +1,9 @@
 package tui
 
 import (
-	"strings"
 	"slices"
+	"strings"
+
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
@@ -93,20 +94,26 @@ func (m model) queueEntry(entry logs.Entry) model {
 	return m
 }
 
-func (m model) filteredEntryIndexes() []*logs.Entry {
-
-	nMaxEntries := min(len(m.inBufferEntries),max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize()))
-	filtered := make([]*logs.Entry, 0, nMaxEntries)
+func (m model) filteredEntries(limit int) []*logs.Entry {
+	maxEntries := len(m.inBufferEntries)
+	if limit > 0 {
+		maxEntries = min(maxEntries, limit)
+	}
+	filtered := make([]*logs.Entry, 0, maxEntries)
 
 	if len(m.filters) == 0 {
-		onScreenEntries := m.inBufferEntries[len(m.inBufferEntries)-nMaxEntries:]
-		for index := range onScreenEntries {
-			filtered = append(filtered, &onScreenEntries[index])
+		start := 0
+		if limit > 0 && len(m.inBufferEntries) > limit {
+			start = len(m.inBufferEntries) - limit
+		}
+		entries := m.inBufferEntries[start:]
+		for index := range entries {
+			filtered = append(filtered, &entries[index])
 		}
 		return filtered
 	}
 
-	for i := len(m.inBufferEntries) - 1; i>=0 && len(filtered) < nMaxEntries ; i--{
+	for i := len(m.inBufferEntries) - 1; i >= 0; i-- {
 		allMatched := true
 		for _, f := range m.filters {
 			if !strings.Contains(m.inBufferEntries[i].Search, f) {
@@ -116,17 +123,19 @@ func (m model) filteredEntryIndexes() []*logs.Entry {
 		}
 		if allMatched {
 			filtered = append(filtered, &m.inBufferEntries[i])
+			if limit > 0 && len(filtered) >= limit {
+				break
+			}
 		}
-
 	}
 	slices.Reverse(filtered)
 	return filtered
 }
 
-func (m *model) contentLines() []string {
+func (m *model) contentLines(limit int) []string {
 	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 
-	m.visibleEntries = m.filteredEntryIndexes()
+	m.visibleEntries = m.filteredEntries(limit)
 
 	lines := make([]string, 0, len(m.visibleEntries))
 	for index := range m.visibleEntries {
@@ -145,15 +154,23 @@ func isNoResultFilter(indexes []int) bool {
 	return len(indexes) == 1 && indexes[0] == noResultIndex
 }
 
-func (m* model) syncViewport(stickBottom bool) {
-	content := m.contentLines()
-	contentHeight := m.totalHeight()
+func (m model) liveEntryLimit() int {
+	return max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
+}
+
+func (m *model) syncViewport(stickBottom bool) {
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
-	maxVisibleLines := max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
+	viewportHeight := m.totalHeight()
+	contentLimit := m.liveEntryLimit()
+	if m.paused {
+		contentLimit = 0
+	}
+	content := m.contentLines(contentLimit)
+
 	m.viewport.SetWidth(contentWidth)
-	m.viewport.SetHeight(contentHeight)
+	m.viewport.SetHeight(viewportHeight)
 	m.filterInput.SetWidth(max(minViewportDimension, m.width-m.styles.filterBar.GetHorizontalFrameSize()-2))
-	m.viewport.SetContentLines(content[:min(maxVisibleLines,len(content))])
+	m.viewport.SetContentLines(content)
 	if stickBottom {
 		m.viewport.GotoBottom()
 	}
