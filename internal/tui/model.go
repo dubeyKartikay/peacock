@@ -6,7 +6,6 @@ import (
 	"charm.land/bubbles/v2/textinput"
 	"charm.land/bubbles/v2/viewport"
 	tea "charm.land/bubbletea/v2"
-	"charm.land/lipgloss/v2"
 	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 	"github.com/dubeyKartikay/peacock/internal/logs"
 )
@@ -142,18 +141,17 @@ func isNoResultFilter(indexes []int) bool {
 	return len(indexes) == 1 && indexes[0] == noResultIndex
 }
 
-func (m model) syncViewport(stickBottom bool) model {
+func (m* model) syncViewport(stickBottom bool) {
 	content := m.contentLines()
 	contentHeight := m.totalHeight()
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 	m.viewport.SetWidth(contentWidth)
 	m.viewport.SetHeight(contentHeight)
 	m.filterInput.SetWidth(max(minViewportDimension, m.width-m.styles.filterBar.GetHorizontalFrameSize()-2))
-	m.viewport.SetContent(lipgloss.JoinVertical(lipgloss.Left, content...))
+	m.viewport.SetContentLines(content)
 	if stickBottom {
 		m.viewport.GotoBottom()
 	}
-	return m
 }
 
 func (m model) totalHeight() int {
