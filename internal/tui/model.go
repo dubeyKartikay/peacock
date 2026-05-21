@@ -133,10 +133,6 @@ func (m model) visibleEntryCount() int {
 	return len(m.visibleEntries)
 }
 
-func isNoResultFilter(indexes []int) bool {
-	return len(indexes) == 1 && indexes[0] == noResultIndex
-}
-
 func (m model) liveEntryLimit() int {
 	return max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
 }
@@ -144,9 +140,6 @@ func (m model) liveEntryLimit() int {
 func (m *model) syncViewport(stickBottom bool) {
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 	contentLimit := m.liveEntryLimit()
-	if m.paused {
-		contentLimit = 0
-	}
 	content := m.contentLines(contentLimit)
 	viewportHeight := m.totalHeight(contentWidth)
 

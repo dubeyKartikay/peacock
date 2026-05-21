@@ -1,9 +1,7 @@
 package tui
 
 import (
-	"fmt"
 	"strings"
-
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
@@ -49,17 +47,13 @@ func (m *model) renderStatus() string {
 	} else if m.sourceDone {
 		state = statusStyle.done.Render(doneStateLabel)
 	}
-	entries := statusStyle.entries.Render(fmt.Sprintf("showing: %d/%d", m.visibleEntryCount(), m.inBufferEntries.Len()+m.queuedEntries.Len()))
-	if m.sourceErr != nil {
-		entries = statusStyle.err.Render(entries)
-	}
 	state = statusStyle.source.Render(state)
 	var left string
 	if m.sourceName != "" {
 		source := statusStyle.source.Render(m.sourceName)
 		left = lipgloss.JoinHorizontal(lipgloss.Left, left, source)
 	}
-	left = lipgloss.JoinHorizontal(lipgloss.Left, state, left, entries)
+	left = lipgloss.JoinHorizontal(lipgloss.Left, state, left)
 
 	for entry := range m.filters {
 		filter := statusStyle.filter.Render(m.filters[entry])
