@@ -1,0 +1,182 @@
+File: peacock
+Build ID: e9a8f22796a5d5f27517f400c9f9e8d4ce730585
+Type: cpu
+Time: 2026-05-21 15:22:14 IST
+Duration: 300.51s, Total samples = 379.46s (126.27%)
+Showing nodes accounting for 323.48s, 85.25% of 379.46s total
+Dropped 789 nodes (cum <= 1.90s)
+      flat  flat%   sum%        cum   cum%
+    33.59s  8.85%  8.85%     33.86s  8.92%  github.com/mattn/go-runewidth.(*Condition).RuneWidth
+    31.84s  8.39% 17.24%     56.60s 14.92%  github.com/charmbracelet/x/ansi.stringWidth
+    27.66s  7.29% 24.53%     64.36s 16.96%  github.com/muesli/reflow/ansi.PrintableRuneWidth
+    21.33s  5.62% 30.15%     21.36s  5.63%  github.com/charmbracelet/x/ansi/parser.TransitionTable.Transition (inline)
+    14.58s  3.84% 34.00%     14.58s  3.84%  runtime.memmove
+     8.69s  2.29% 36.29%     15.43s  4.07%  runtime.tryDeferToSpanScan
+     8.28s  2.18% 38.47%     88.52s 23.33%  github.com/muesli/reflow/wordwrap.(*WordWrap).Write
+     7.85s  2.07% 40.54%      7.85s  2.07%  runtime.memclrNoHeapPointers
+     7.63s  2.01% 42.55%     94.70s 24.96%  charm.land/lipgloss/v2.Style.Render
+     5.94s  1.57% 44.11%     27.02s  7.12%  runtime.scanObject
+     5.81s  1.53% 45.64%      8.11s  2.14%  charm.land/lipgloss/v2.Style.isBorderStyleSetWithoutSides
+     5.34s  1.41% 47.05%      9.22s  2.43%  bytes.(*Buffer).WriteByte
+     4.87s  1.28% 48.33%    184.35s 48.58%  github.com/dubeyKartikay/peacock/internal/tui.styles.renderEntry
+     4.80s  1.26% 49.60%     38.39s 10.12%  github.com/mattn/go-runewidth.RuneWidth (inline)
+     4.02s  1.06% 50.66%      4.02s  1.06%  aeshashbody
+     3.99s  1.05% 51.71%      3.99s  1.05%  runtime.spanClass.sizeclass (inline)
+     3.88s  1.02% 52.73%     15.17s  4.00%  github.com/charmbracelet/ultraviolet.printString[go.shape.string]
+     3.86s  1.02% 53.75%      4.55s  1.20%  github.com/charmbracelet/ultraviolet.Line.Set
+     3.83s  1.01% 54.76%      3.86s  1.02%  charm.land/lipgloss/v2.Style.getAsBool (inline)
+     3.83s  1.01% 55.77%     15.82s  4.17%  github.com/muesli/reflow/wrap.(*Wrap).Write
+     3.69s  0.97% 56.74%      3.69s  0.97%  runtime.nextFreeFast (inline)
+     3.65s  0.96% 57.70%     25.31s  6.67%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).updatePen
+     3.52s  0.93% 58.63%     28.36s  7.47%  runtime.mallocgc
+     3.41s   0.9% 59.53%      6.52s  1.72%  runtime.mallocgcTiny
+     3.36s  0.89% 60.41%      9.10s  2.40%  bytes.(*Buffer).String (inline)
+     3.27s  0.86% 61.28%      9.44s  2.49%  github.com/charmbracelet/x/ansi.wrap
+     3.22s  0.85% 62.13%      3.22s  0.85%  bytes.(*Buffer).tryGrowByReslice (inline)
+     3.13s  0.82% 62.95%      8.78s  2.31%  github.com/charmbracelet/ultraviolet.(*Cell).Equal
+     2.98s  0.79% 63.74%      2.98s  0.79%  runtime.typePointers.nextFast (inline)
+     2.83s  0.75% 64.48%     18.71s  4.93%  github.com/charmbracelet/ultraviolet.ConvertStyle
+     2.77s  0.73% 65.21%      7.07s  1.86%  bytes.(*Buffer).Write
+     2.72s  0.72% 65.93%      2.72s  0.72%  unicode.IsSpace
+     2.38s  0.63% 66.56%      2.52s  0.66%  runtime.heapArenaOf (inline)
+     2.37s  0.62% 67.18%      3.39s  0.89%  runtime.findObject
+     2.37s  0.62% 67.80%      2.37s  0.62%  runtime.futex
+     2.36s  0.62% 68.43%      2.44s  0.64%  charm.land/lipgloss/v2.Style.getAsInt
+     2.28s   0.6% 69.03%      3.21s  0.85%  github.com/charmbracelet/ultraviolet.colorEqual
+     2.19s  0.58% 69.60%     11.25s  2.96%  bytes.(*Buffer).WriteRune
+     2.11s  0.56% 70.16%      2.11s  0.56%  memeqbody
+     2.08s  0.55% 70.71%      2.94s  0.77%  runtime.typePointers.next
+     2.01s  0.53% 71.24%      2.28s   0.6%  github.com/charmbracelet/x/ansi.(*Parser).performAction
+        2s  0.53% 71.77%    186.57s 49.17%  github.com/dubeyKartikay/peacock/internal/tui.(*model).contentLines
+     1.99s  0.52% 72.29%      1.99s  0.52%  github.com/muesli/reflow/wordwrap.inGroup (inline)
+     1.98s  0.52% 72.81%      5.17s  1.36%  github.com/charmbracelet/ultraviolet.(*Style).Equal
+     1.93s  0.51% 73.32%      1.93s  0.51%  countbody
+     1.88s   0.5% 73.82%      2.21s  0.58%  github.com/charmbracelet/ultraviolet.(*Buffer).CellAt (inline)
+     1.81s  0.48% 74.29%      5.07s  1.34%  runtime.concatstrings
+     1.81s  0.48% 74.77%      6.92s  1.82%  runtime.slicebytetostring
+     1.76s  0.46% 75.23%     19.24s  5.07%  charm.land/lipgloss/v2.(*WrapWriter).Write
+     1.58s  0.42% 75.65%      6.13s  1.62%  runtime.mapaccess2
+     1.56s  0.41% 76.06%      8.03s  2.12%  runtime.mallocgcSmallNoscan
+     1.55s  0.41% 76.47%      3.70s  0.98%  internal/runtime/maps.(*Map).getWithKeySmall
+     1.51s   0.4% 76.87%      3.25s  0.86%  github.com/charmbracelet/ultraviolet.TabStops.Find
+     1.42s  0.37% 77.24%      5.97s  1.57%  github.com/charmbracelet/ultraviolet.(*Buffer).SetCell (inline)
+     1.39s  0.37% 77.61%      9.89s  2.61%  charm.land/lipgloss/v2.Style.applyBorder
+     1.22s  0.32% 77.93%      3.10s  0.82%  github.com/clipperhouse/uax29/v2/graphemes.(*Iterator[go.shape.string]).Next
+     1.15s   0.3% 78.23%      3.11s  0.82%  github.com/clipperhouse/uax29/v2/graphemes.(*Iterator[go.shape.string]).First
+     1.11s  0.29% 78.52%      8.68s  2.29%  runtime.newobject
+     1.09s  0.29% 78.81%      4.24s  1.12%  github.com/charmbracelet/x/ansi.(*Parser).advance
+     1.04s  0.27% 79.09%     14.23s  3.75%  charm.land/lipgloss/v2.Style.applyMargins
+     1.02s  0.27% 79.35%     43.54s 11.47%  github.com/dubeyKartikay/peacock/internal/tui.styles.renderPart
+     0.95s  0.25% 79.61%     15.88s  4.18%  github.com/charmbracelet/colorprofile.Profile.Convert
+     0.86s  0.23% 79.83%     15.23s  4.01%  runtime.growslice
+     0.86s  0.23% 80.06%      8.02s  2.11%  runtime.mapaccess1
+     0.81s  0.21% 80.27%      9.96s  2.62%  strings.(*Builder).WriteString (inline)
+     0.78s  0.21% 80.48%     11.93s  3.14%  github.com/charmbracelet/ultraviolet.(*RenderBuffer).SetCell
+     0.73s  0.19% 80.67%      4.11s  1.08%  strings.Count
+     0.61s  0.16% 80.83%      3.50s  0.92%  runtime.mallocgcSmallScanNoHeader
+     0.61s  0.16% 80.99%      3.67s  0.97%  runtime.sweepone
+     0.60s  0.16% 81.15%      7.20s  1.90%  github.com/charmbracelet/ultraviolet.relativeCursorMove
+     0.58s  0.15% 81.30%      2.97s  0.78%  runtime.(*sweepLocked).sweep
+     0.57s  0.15% 81.45%      4.81s  1.27%  github.com/charmbracelet/x/ansi.(*Parser).Advance
+     0.57s  0.15% 81.60%      3.69s  0.97%  runtime.(*wbBuf).get2 (inline)
+     0.55s  0.14% 81.75%     24.09s  6.35%  charm.land/lipgloss/v2.JoinHorizontal
+     0.52s  0.14% 81.88%      2.34s  0.62%  charm.land/lipgloss/v2.Style.GetBorderTopSize
+     0.52s  0.14% 82.02%     36.47s  9.61%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).putRange
+     0.51s  0.13% 82.16%      2.12s  0.56%  charm.land/lipgloss/v2.Style.GetBorderRightSize
+     0.50s  0.13% 82.29%      2.47s  0.65%  charm.land/lipgloss/v2.Style.GetBorderLeftSize
+     0.48s  0.13% 82.41%      4.90s  1.29%  runtime.bulkBarrierPreWrite
+     0.47s  0.12% 82.54%      2.17s  0.57%  runtime.(*mcentral).cacheSpan
+     0.46s  0.12% 82.66%      5.05s  1.33%  charm.land/lipgloss/v2.Style.GetVerticalBorderSize
+     0.45s  0.12% 82.78%      9.21s  2.43%  github.com/charmbracelet/ultraviolet.cellEqual (inline)
+     0.42s  0.11% 82.89%      2.46s  0.65%  github.com/clipperhouse/displaywidth.Options.String
+     0.42s  0.11% 83.00%      1.97s  0.52%  internal/stringslite.Index
+     0.40s  0.11% 83.10%      3.43s   0.9%  runtime.wbBufFlush1
+     0.36s 0.095% 83.20%      3.08s  0.81%  strings.Replace
+     0.35s 0.092% 83.29%      2.25s  0.59%  charm.land/lipgloss/v2.Style.GetBorderBottomSize
+     0.35s 0.092% 83.38%     19.10s  5.03%  github.com/charmbracelet/ultraviolet.(*StyledString).Draw
+     0.35s 0.092% 83.48%      2.23s  0.59%  github.com/charmbracelet/x/ansi.DecodeSequenceWc[go.shape.string]
+     0.34s  0.09% 83.57%      2.61s  0.69%  runtime.rawstringtmp
+     0.34s  0.09% 83.66%      3.32s  0.87%  strings.genSplit
+     0.33s 0.087% 83.74%      3.37s  0.89%  bytes.(*Buffer).grow
+     0.33s 0.087% 83.83%      4.92s  1.30%  charm.land/lipgloss/v2.Style.GetHorizontalBorderSize
+     0.31s 0.082% 83.91%      2.44s  0.64%  bytes.growSlice
+     0.31s 0.082% 83.99%     32.97s  8.69%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).emitRange
+     0.31s 0.082% 84.07%      3.44s  0.91%  runtime.memhash8
+     0.28s 0.074% 84.15%      3.79s     1%  runtime.makeslice
+     0.27s 0.071% 84.22%      6.33s  1.67%  github.com/charmbracelet/x/ansi.FirstGraphemeCluster[go.shape.string]
+     0.26s 0.069% 84.29%    271.20s 71.47%  charm.land/bubbletea/v2.(*Program).eventLoop
+     0.26s 0.069% 84.36%      6.91s  1.82%  github.com/muesli/reflow/wordwrap.(*WordWrap).addWord
+     0.24s 0.063% 84.42%     26.27s  6.92%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).putAttrCell
+     0.24s 0.063% 84.48%      2.91s  0.77%  github.com/charmbracelet/ultraviolet.TabStops.Prev (inline)
+     0.21s 0.055% 84.54%     26.54s  6.99%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).putCell
+     0.18s 0.047% 84.59%     33.31s  8.78%  charm.land/lipgloss/v2.getLines
+     0.17s 0.045% 84.63%      3.56s  0.94%  runtime.(*mcache).nextFree
+     0.16s 0.042% 84.67%      2.09s  0.55%  github.com/charmbracelet/ultraviolet.(*Buffer).FillArea
+     0.16s 0.042% 84.72%      3.21s  0.85%  runtime.(*mcache).refill
+     0.15s  0.04% 84.75%      4.40s  1.16%  charm.land/lipgloss/v2.Style.Render-range1
+     0.15s  0.04% 84.79%      3.51s  0.92%  runtime.concatstring3
+     0.13s 0.034% 84.83%     43.93s 11.58%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).transformLine
+     0.12s 0.032% 84.86%    208.57s 54.96%  github.com/dubeyKartikay/peacock/internal/tui.model.Update
+     0.11s 0.029% 84.89%      3.88s  1.02%  runtime.findRunnable
+     0.11s 0.029% 84.92%     30.30s  7.99%  runtime.gcDrain
+     0.11s 0.029% 84.95%     37.67s  9.93%  runtime.systemstack
+     0.09s 0.024% 84.97%    193.34s 50.95%  github.com/dubeyKartikay/peacock/internal/tui.(*model).syncViewport
+     0.09s 0.024% 84.99%     69.27s 18.25%  github.com/muesli/reflow/ansi.Buffer.PrintableRuneWidth (inline)
+     0.08s 0.021% 85.02%     44.19s 11.65%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).Render
+     0.08s 0.021% 85.04%      2.60s  0.69%  runtime.rawstring (inline)
+     0.07s 0.018% 85.06%      2.39s  0.63%  github.com/charmbracelet/x/ansi.Style.Styled
+     0.07s 0.018% 85.07%     10.11s  2.66%  runtime.typedslicecopy
+     0.06s 0.016% 85.09%     62.13s 16.37%  charm.land/bubbletea/v2.(*Program).render
+     0.06s 0.016% 85.11%      9.66s  2.55%  charm.land/lipgloss/v2.alignTextHorizontal
+     0.04s 0.011% 85.12%      6.34s  1.67%  charm.land/bubbles/v2/viewport.(*Model).SetContentLines
+     0.04s 0.011% 85.13%      7.59s  2.00%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).move
+     0.04s 0.011% 85.14%      4.48s  1.18%  runtime.schedule
+     0.03s 0.0079% 85.14%     37.35s  9.84%  charm.land/bubbles/v2/viewport.Model.View
+     0.03s 0.0079% 85.15%      8.90s  2.35%  charm.land/lipgloss/v2.JoinVertical
+     0.03s 0.0079% 85.16%      4.74s  1.25%  charm.land/lipgloss/v2.Style.Render.SplitSeq.splitSeq.func1 (inline)
+     0.03s 0.0079% 85.17%      3.71s  0.98%  runtime.bgsweep
+     0.03s 0.0079% 85.18%      2.15s  0.57%  runtime.markroot
+     0.03s 0.0079% 85.18%         2s  0.53%  strings.Index (inline)
+     0.02s 0.0053% 85.19%     65.84s 17.35%  charm.land/bubbletea/v2.(*cursedRenderer).flush
+     0.02s 0.0053% 85.19%      7.19s  1.89%  charm.land/lipgloss/v2.Width.SplitSeq.splitSeq.func1 (inline)
+     0.02s 0.0053% 85.20%      7.49s  1.97%  github.com/charmbracelet/ultraviolet.moveCursor
+     0.02s 0.0053% 85.21%     56.62s 14.92%  github.com/charmbracelet/x/ansi.StringWidth (inline)
+     0.02s 0.0053% 85.21%    122.35s 32.24%  github.com/dubeyKartikay/peacock/internal/logs.WrapHorizontalOverflow
+     0.02s 0.0053% 85.22%      3.43s   0.9%  runtime.wbBufFlush
+     0.02s 0.0053% 85.22%      3.40s   0.9%  runtime.wbBufFlush.func1
+     0.02s 0.0053% 85.23%      2.81s  0.74%  strings.ReplaceAll (inline)
+     0.02s 0.0053% 85.23%      3.34s  0.88%  strings.Split (inline)
+     0.01s 0.0026% 85.23%      5.08s  1.34%  charm.land/bubbles/v2/viewport.maxLineWidth
+     0.01s 0.0026% 85.24%     65.86s 17.36%  charm.land/bubbletea/v2.(*Program).startRenderer.func1
+     0.01s 0.0026% 85.24%      7.51s  1.98%  github.com/charmbracelet/ultraviolet.(*TerminalRenderer).moveCursor
+     0.01s 0.0026% 85.24%     62.05s 16.35%  github.com/dubeyKartikay/peacock/internal/tui.model.View
+     0.01s 0.0026% 85.24%     88.55s 23.34%  github.com/muesli/reflow/wordwrap.Bytes
+     0.01s 0.0026% 85.25%     15.87s  4.18%  github.com/muesli/reflow/wrap.Bytes
+         0     0% 85.25%    271.20s 71.47%  charm.land/bubbletea/v2.(*Program).Run
+         0     0% 85.25%      7.19s  1.89%  charm.land/lipgloss/v2.Width
+         0     0% 85.25%      6.99s  1.84%  charm.land/lipgloss/v2.Width-range1 (inline)
+         0     0% 85.25%     28.89s  7.61%  charm.land/lipgloss/v2.Wrap
+         0     0% 85.25%      2.09s  0.55%  github.com/charmbracelet/ultraviolet.(*Buffer).Clear
+         0     0% 85.25%      2.09s  0.55%  github.com/charmbracelet/ultraviolet.(*Buffer).ClearArea (inline)
+         0     0% 85.25%      9.44s  2.49%  github.com/charmbracelet/x/ansi.Wrap (inline)
+         0     0% 85.25%    271.20s 71.47%  github.com/dubeyKartikay/peacock/internal/app.Run
+         0     0% 85.25%    271.20s 71.47%  github.com/dubeyKartikay/peacock/internal/cli.Execute
+         0     0% 85.25%    271.20s 71.47%  github.com/dubeyKartikay/peacock/internal/cli.NewRootCommand.func1
+         0     0% 85.25%    107.49s 28.33%  github.com/dubeyKartikay/peacock/internal/logs.wrapString
+         0     0% 85.25%     15.02s  3.96%  github.com/dubeyKartikay/peacock/internal/tui.model.appendEntry (inline)
+         0     0% 85.25%     88.76s 23.39%  github.com/muesli/reflow/wordwrap.String (inline)
+         0     0% 85.25%     16.08s  4.24%  github.com/muesli/reflow/wrap.String (inline)
+         0     0% 85.25%    271.20s 71.47%  github.com/spf13/cobra.(*Command).Execute (inline)
+         0     0% 85.25%    271.20s 71.47%  github.com/spf13/cobra.(*Command).ExecuteC
+         0     0% 85.25%    271.20s 71.47%  github.com/spf13/cobra.(*Command).execute
+         0     0% 85.25%     19.33s  5.09%  io.WriteString
+         0     0% 85.25%    271.20s 71.47%  main.main
+         0     0% 85.25%     31.64s  8.34%  runtime.gcBgMarkWorker
+         0     0% 85.25%     30.30s  7.99%  runtime.gcBgMarkWorker.func2
+         0     0% 85.25%     26.65s  7.02%  runtime.gcDrainMarkWorkerDedicated (inline)
+         0     0% 85.25%      3.65s  0.96%  runtime.gcDrainMarkWorkerIdle (inline)
+         0     0% 85.25%    271.20s 71.47%  runtime.main
+         0     0% 85.25%      5.75s  1.52%  runtime.mallocgcLarge
+         0     0% 85.25%      4.08s  1.08%  runtime.mcall
+         0     0% 85.25%      5.38s  1.42%  runtime.memclrNoHeapPointersChunked
+         0     0% 85.25%      4.05s  1.07%  runtime.park_m

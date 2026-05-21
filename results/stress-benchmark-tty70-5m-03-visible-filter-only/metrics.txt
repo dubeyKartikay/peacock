@@ -1,0 +1,16 @@
+started_at_epoch=1779357134
+rate=50000
+duration=5m
+stop_after=5m
+seed=1
+benchmark_name=tty70-5m-03-visible-filter-only
+tty_rows=70
+tty_cols=240
+elapsed_ms=300556
+processed_lines=54808
+throughput_lines_per_second=182
+benchmark_exit_status=0
+benchmark_status=exited
+tty_log=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-5m-03-visible-filter-only/peacock.tty.log
+cpu_profile=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-5m-03-visible-filter-only/peacock.cpu.prof
+pprof_text=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-5m-03-visible-filter-only/peacock.pprof.txt

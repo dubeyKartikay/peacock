@@ -1,0 +1,16 @@
+started_at_epoch=1779355895
+rate=50000
+duration=30s
+stop_after=30s
+seed=1
+benchmark_name=tty70-04-defer-live-viewport
+tty_rows=70
+tty_cols=240
+elapsed_ms=30789
+processed_lines=6415
+throughput_lines_per_second=208
+benchmark_exit_status=0
+benchmark_status=exited
+tty_log=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-04-defer-live-viewport/peacock.tty.log
+cpu_profile=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-04-defer-live-viewport/peacock.cpu.prof
+pprof_text=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-04-defer-live-viewport/peacock.pprof.txt

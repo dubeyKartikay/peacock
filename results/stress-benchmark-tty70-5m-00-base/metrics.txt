@@ -1,0 +1,16 @@
+started_at_epoch=1779356189
+rate=50000
+duration=5m
+stop_after=5m
+seed=1
+benchmark_name=tty70-5m-00-base
+tty_rows=70
+tty_cols=240
+elapsed_ms=300454
+processed_lines=3894
+throughput_lines_per_second=12
+benchmark_exit_status=0
+benchmark_status=exited
+tty_log=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-5m-00-base/peacock.tty.log
+cpu_profile=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-5m-00-base/peacock.cpu.prof
+pprof_text=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-5m-00-base/peacock.pprof.txt

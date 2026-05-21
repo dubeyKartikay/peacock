@@ -1,0 +1,16 @@
+started_at_epoch=1779355937
+rate=50000
+duration=30s
+stop_after=30s
+seed=1
+benchmark_name=tty70-05-ring-buffer
+tty_rows=70
+tty_cols=240
+elapsed_ms=30538
+processed_lines=6495
+throughput_lines_per_second=212
+benchmark_exit_status=0
+benchmark_status=exited
+tty_log=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-05-ring-buffer/peacock.tty.log
+cpu_profile=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-05-ring-buffer/peacock.cpu.prof
+pprof_text=/tmp/opencode/peacock-bench-tty70/results/stress-benchmark-tty70-05-ring-buffer/peacock.pprof.txt

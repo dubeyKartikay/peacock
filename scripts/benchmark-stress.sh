@@ -9,6 +9,8 @@ DURATION="${DURATION:-30s}"
 STOP_AFTER="${STOP_AFTER:-$DURATION}"
 SEED="${SEED:-1}"
 BENCHMARK_NAME="${BENCHMARK_NAME:-$(date +%Y%m%d-%H%M%S)}"
+TTY_ROWS="${TTY_ROWS:-70}"
+TTY_COLS="${TTY_COLS:-240}"
 
 OUT_DIR="${OUT_DIR:-$ROOT_DIR/results/stress-benchmark-$BENCHMARK_NAME}"
 PEACOCK_BIN="$ROOT_DIR/target/peacock"
@@ -47,6 +49,8 @@ write_metrics() {
     printf 'stop_after=%s\n' "$STOP_AFTER"
     printf 'seed=%s\n' "$SEED"
     printf 'benchmark_name=%s\n' "$BENCHMARK_NAME"
+    printf 'tty_rows=%s\n' "$TTY_ROWS"
+    printf 'tty_cols=%s\n' "$TTY_COLS"
     printf 'elapsed_ms=%s\n' "$elapsed_ms"
     printf 'processed_lines=%s\n' "$processed_lines"
     printf 'throughput_lines_per_second=%s\n' "$throughput_lines_per_second"
@@ -66,7 +70,7 @@ mkdir -p "$OUT_DIR" "$ROOT_DIR/target"
 printf 'building peacock...\n'
 go build -o "$PEACOCK_BIN" "$ROOT_DIR/cmd/peacock"
 
-printf 'running stress benchmark: name=%s rate=%s duration=%s stop_after=%s seed=%s\n' "$BENCHMARK_NAME" "$RATE" "$DURATION" "$STOP_AFTER" "$SEED"
+printf 'running stress benchmark: name=%s rate=%s duration=%s stop_after=%s seed=%s tty=%sx%s\n' "$BENCHMARK_NAME" "$RATE" "$DURATION" "$STOP_AFTER" "$SEED" "$TTY_COLS" "$TTY_ROWS"
 
 start_epoch=$(date +%s)
 start_ns=$(date +%s%N)
@@ -78,11 +82,11 @@ PIPELINE='go run "$ROOT_DIR/testdata/stress-test/main.go" \
   | tee >(wc -l > "$LINE_COUNT") \
   | TERM=xterm-256color "$PEACOCK_BIN" --cpuprofile "$CPU_PROFILE"'
 
-export PIPELINE ROOT_DIR RATE DURATION SEED PEACOCK_BIN CPU_PROFILE LINE_COUNT
+export PIPELINE ROOT_DIR RATE DURATION SEED PEACOCK_BIN CPU_PROFILE LINE_COUNT TTY_ROWS TTY_COLS
 
 set +e
 (sleep "$STOP_AFTER"; printf '\003') \
-  | script -q -e -f -c 'bash -o pipefail -c "$PIPELINE"' "$TTY_LOG" >/dev/null 2>&1
+  | script -q -e -f -c 'stty rows "$TTY_ROWS" cols "$TTY_COLS"; export LINES="$TTY_ROWS" COLUMNS="$TTY_COLS"; bash -o pipefail -c "$PIPELINE"' "$TTY_LOG" >/dev/null 2>&1
 benchmark_status=$?
 set -e
 
