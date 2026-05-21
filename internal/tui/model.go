@@ -15,7 +15,6 @@ const (
 	minViewportDimension   = 1
 	statusLineCount        = 1
 	filterLineCount        = 1
-	noResultIndex          = -1
 	viewportPageDownKey    = "pgdown"
 	viewportPageDownAltKey = "ctrl+f"
 	viewportPageUpKey      = "pgup"
@@ -129,11 +128,11 @@ func (m *model) contentLines(limit int) []string {
 	return lines
 }
 
-func (m model) visibleEntryCount() int {
-	return len(m.visibleEntries)
-}
 
 func (m model) liveEntryLimit() int {
+	if(m.paused){
+		return m.inBufferEntries.Len()
+	}
 	return max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
 }
 
