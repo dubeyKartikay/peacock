@@ -52,7 +52,7 @@ type model struct {
 	filters         Filters
 }
 
-func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
+func NewModel(sourceName string, cfg appconfig.Config) model {
 	input := textinput.New()
 	input.Prompt = cfg.Input.FilterPrompt
 	input.CharLimit = cfg.Input.FilterCharLimit
@@ -71,6 +71,12 @@ func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
 		inBufferEntries: newEntryRing(cfg.Buffer.MaxEntries),
 		queuedEntries:   newEntryRing(cfg.Buffer.MaxEntries),
 	}
+}
+
+func (m model) WithFilters(filters ...string) model {
+	m.filters = filters
+	m.filterActive = len(filters) > 0
+	return m
 }
 
 func (m model) Init() tea.Cmd {

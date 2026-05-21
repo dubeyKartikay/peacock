@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"runtime/pprof"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -22,6 +23,7 @@ const (
 	followFlagShorthand = "f"
 	followFlagUsage     = "Follow appended lines in file mode"
 	cpuProfileFlagName  = "cpuprofile"
+	filterFlagName      = "filter"
 	cpuProfileFlagUsage = "Write CPU profile to this file"
 )
 
@@ -32,6 +34,7 @@ func Execute(stdin *os.File) error {
 func NewRootCommand(stdin *os.File) *cobra.Command {
 	var configPath string
 	var cpuProfilePath string
+	var filterstr string
 
 	cmd := &cobra.Command{
 		Use:          rootUse,
@@ -69,6 +72,7 @@ func NewRootCommand(stdin *os.File) *cobra.Command {
 				Config:    cfg,
 				InputPath: inputPath,
 				Stdin:     stdin,
+				Filters:  strings.Split(filterstr, ","),
 			}
 
 			if err := app.Run(runOptions); err != nil {
@@ -81,6 +85,7 @@ func NewRootCommand(stdin *os.File) *cobra.Command {
 
 	cmd.Flags().StringVar(&configPath, appconfig.FlagConfig, "", configFlagUsage)
 	cmd.Flags().StringVar(&cpuProfilePath, cpuProfileFlagName, "", cpuProfileFlagUsage)
+	cmd.Flags().StringVar(&filterstr, filterFlagName, "","Add a filter ")
 	appconfig.RegisterFlags(cmd.Flags())
 
 	cmd.AddCommand(&cobra.Command{

@@ -16,6 +16,7 @@ type Options struct {
 	Config    appconfig.Config
 	InputPath string
 	Stdin     *os.File
+	Filters 	[]string
 }
 
 func Run(options Options) error {
@@ -25,7 +26,7 @@ func Run(options Options) error {
 	}
 	defer src.Close()
 
-	model := tui.NewModel(src.Name(), options.Config)
+	model := tui.NewModel(src.Name(), options.Config).WithFilters(options.Filters...)
 	programOptions := []tea.ProgramOption{}
 	if options.InputPath != "" && !options.Config.Source.FileFollow {
 		programOptions = append(programOptions, tea.WithEnvironment(nonQueryEnvironment(os.Environ())))
