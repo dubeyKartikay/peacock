@@ -88,10 +88,7 @@ func (m model) queueEntry(entry logs.Entry) model {
 }
 
 func (m model) filteredEntries(limit int) []*logs.Entry {
-	maxEntries := m.inBufferEntries.Len()
-	if limit > 0 {
-		maxEntries = min(maxEntries, limit)
-	}
+	maxEntries := min(m.inBufferEntries.Len(), limit)
 	filtered := make([]*logs.Entry, 0, maxEntries)
 
 	if len(m.filters) == 0 {
