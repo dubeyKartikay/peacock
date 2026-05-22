@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 
 	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 	"github.com/dubeyKartikay/peacock/internal/logs"
@@ -115,11 +116,29 @@ func TestFilterUsesLiteralSubstringMatching(t *testing.T) {
 	}
 }
 
+func TestRenderHighlights(t *testing.T) {
+	s := defaultStyles(appconfig.DefaultConfig().Theme)
+	s.highlight = lipgloss.NewStyle().Foreground(lipgloss.Color("0")).Background(lipgloss.Color("11"))
+
+	const text = "database timeout while reading"
+	if got := s.renderHighlights(text, Filters{"missing"}); got != text {
+		t.Fatalf("expected no-match path to return original string, got %q", got)
+	}
+
+	got := s.renderHighlights(text, Filters{"timeout"})
+	if stripped := stripANSI(got); stripped != text {
+		t.Fatalf("highlight changed text: got %q want %q", stripped, text)
+	}
+	if !strings.Contains(got, "\x1b[") {
+		t.Fatalf("expected highlighted output to contain ANSI styling, got %q", got)
+	}
+}
+
 func newSizedModel(cfg appconfig.Config) model {
 	m := NewModel("stdin", cfg).(model)
 	m.width = 80
 	m.height = 20
-	m.syncViewport(true)
+	m.syncViewport(true, false)
 	return m
 }
 

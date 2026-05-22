@@ -179,6 +179,8 @@ theme:
   message_fg: "15"
   caller_fg: "4"
   context_fg: "5"
+  highlight_fg: "0"
+  highlight_bg: "13"
   raw_fg: "7"
   panel_border: "8"
   status_fg: "7"

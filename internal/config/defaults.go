@@ -34,6 +34,8 @@ const (
 	defaultCallerFaint               = false
 	defaultContextFG                 = "5"
 	defaultContextFaint              = false
+	defaultHighlightFG               = "0"
+	defaultHighlightBG               = "7"
 	defaultRawFG                     = "7"
 	defaultLevelError                = "9"
 	defaultLevelWarn                 = "11"

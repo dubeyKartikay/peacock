@@ -88,7 +88,10 @@ func (m model) queueEntry(entry logs.Entry) model {
 }
 
 func (m model) filteredEntries(limit int) []*logs.Entry {
-	maxEntries := min(m.inBufferEntries.Len(), limit)
+	maxEntries := m.inBufferEntries.Len()
+	if limit > 0 {
+		maxEntries = min(maxEntries, limit)
+	}
 	filtered := make([]*logs.Entry, 0, maxEntries)
 
 	if len(m.filters) == 0 {
@@ -97,7 +100,7 @@ func (m model) filteredEntries(limit int) []*logs.Entry {
 
 	m.inBufferEntries.ReverseRange(func(entry *logs.Entry) bool {
 
-		if limit <= 0 || len(filtered) >= limit-1 {
+		if limit > 0 && len(filtered) >= limit {
 			return false
 		}
 		for _, filter := range m.filters {
@@ -112,31 +115,30 @@ func (m model) filteredEntries(limit int) []*logs.Entry {
 	return filtered
 }
 
-func (m *model) contentLines(limit int) []string {
+func (m *model) contentLines(limit int, invalidateRenderCache bool) []string {
 	width := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 
 	m.visibleEntries = m.filteredEntries(limit)
 
 	lines := make([]string, 0, len(m.visibleEntries))
 	for index := range m.visibleEntries {
-		rendered := m.styles.renderEntry(m.visibleEntries[index], width)
+		rendered := m.styles.renderEntry(m.visibleEntries[index], m.filters, width, invalidateRenderCache)
 		lines = append(lines, rendered)
 	}
 	return lines
 }
 
-
 func (m model) liveEntryLimit() int {
-	if(m.paused){
+	if m.paused {
 		return m.inBufferEntries.Len()
 	}
 	return max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
 }
 
-func (m *model) syncViewport(stickBottom bool) {
+func (m *model) syncViewport(stickBottom bool, invalidateRenderCache bool) {
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 	contentLimit := m.liveEntryLimit()
-	content := m.contentLines(contentLimit)
+	content := m.contentLines(contentLimit, invalidateRenderCache)
 	viewportHeight := m.totalHeight(contentWidth)
 
 	m.viewport.SetWidth(contentWidth)
@@ -158,8 +160,7 @@ func (m model) totalHeight(width int) int {
 		m.inBufferEntries.Range(func(entry *logs.Entry) bool {
 			height, ok := entry.GetCachedHeight(width)
 			if !ok {
-				m.styles.renderEntry(entry, width)
-				height, _ = entry.GetCachedHeight(width)
+				height = 1
 			}
 			total += height
 			return true
@@ -176,8 +177,7 @@ func (m model) contentHeight(width int) int {
 	m.inBufferEntries.Range(func(entry *logs.Entry) bool {
 		height, ok := entry.GetCachedHeight(width)
 		if !ok {
-			m.styles.renderEntry(entry, width)
-			height, _ = entry.GetCachedHeight(width)
+			height = 1
 		}
 		total += height
 		return true

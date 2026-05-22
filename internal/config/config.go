@@ -41,6 +41,8 @@ type ThemeConfig struct {
 	CallerFaint    bool   `mapstructure:"caller_faint"`
 	ContextFG      string `mapstructure:"context_fg"`
 	ContextFaint   bool   `mapstructure:"context_faint"`
+	HighlightFG    string `mapstructure:"highlight_fg"`
+	HighlightBG    string `mapstructure:"highlight_bg"`
 	RawFG          string `mapstructure:"raw_fg"`
 	LevelError     string `mapstructure:"level_error"`
 	LevelWarn      string `mapstructure:"level_warn"`
@@ -79,6 +81,8 @@ func DefaultConfig() Config {
 			CallerFaint:    defaultCallerFaint,
 			ContextFG:      defaultContextFG,
 			ContextFaint:   defaultContextFaint,
+			HighlightFG:    defaultHighlightFG,
+			HighlightBG:    defaultHighlightBG,
 			RawFG:          defaultRawFG,
 			LevelError:     defaultLevelError,
 			LevelWarn:      defaultLevelWarn,

@@ -18,7 +18,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
-		m.syncViewport(!m.paused)
+		m.syncViewport(!m.paused,false)
 		return m, nil
 	case EntryMsg:
 		if m.paused {
@@ -27,7 +27,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		} else {
 			m = m.appendEntry(msg.Entry)
 		}
-		m.syncViewport(true)
+		m.syncViewport(true,false)
 		return m, nil
 	case SourceErrMsg:
 		m.sourceErr = msg.Err
@@ -35,7 +35,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case SourceDoneMsg:
 		m.sourceDone = true
 		if !m.cfg.Source.FileFollow {
-			m.syncViewport(true)
+			m.syncViewport(true,false)
 			return m, tea.Quit
 		}
 		return m, nil
@@ -57,13 +57,13 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		case tea.KeyEsc:
 			m.filterActive = false
 			m.filterInput.Blur()
-			m.syncViewport(!m.paused)
+			m.syncViewport(!m.paused,false)
 			return m, nil
 		case tea.KeyEnter:
 			m.filterActive = false
 			q := m.filterInput.Value()
 			m.filters = append(m.filters, q)
-			m.syncViewport(!m.paused)
+			m.syncViewport(!m.paused,true)
 			return m, nil
 		}
 		var cmd tea.Cmd
@@ -75,7 +75,7 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case keySpaceLiteral:
 		m.paused = !m.paused
 		if m.paused {
-			m.syncViewport(true)
+			m.syncViewport(true,false)
 			return m, nil
 		}
 		m.queuedEntries.Range(func(entry *logs.Entry) bool {
@@ -83,13 +83,13 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			return true
 		})
 		m.queuedEntries.Reset()
-		m.syncViewport(true)
+		m.syncViewport(true,false)
 		return m, nil
 	case keyFilterMode:
 		m.filterActive = true
 		m.filterInput.SetValue("")
 		m.filterInput.CursorEnd()
-		m.syncViewport(false)
+		m.syncViewport(false,false)
 		cmd := m.filterInput.Focus()
 		return m, cmd
 	case keyGoToTop:
@@ -101,7 +101,7 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case keyRemoveLastFilter:
 		if len(m.filters) > 0 {
 			m.filters = m.filters[:len(m.filters)-1]
-			m.syncViewport(!m.paused)
+			m.syncViewport(!m.paused,true)
 		}
 		return m, nil
 	}
