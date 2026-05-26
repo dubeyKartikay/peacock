@@ -1,0 +1,182 @@
+File: peacock
+Build ID: b024e279e6d8a228e3b9282f395c4bc28ea95190
+Type: cpu
+Time: 2026-05-24 19:22:16 UTC
+Duration: 300s, Total samples = 560.82s (186.94%)
+Showing nodes accounting for 484.35s, 86.36% of 560.82s total
+Dropped 875 nodes (cum <= 2.80s)
+      flat  flat%   sum%        cum   cum%
+    92.17s 16.43% 16.43%     92.17s 16.43%  runtime.memmove
+    78.68s 14.03% 30.46%     78.68s 14.03%  runtime.memclrNoHeapPointers
+    46.75s  8.34% 38.80%     46.75s  8.34%  runtime.futex
+    41.53s  7.41% 46.21%     77.19s 13.76%  runtime.tryDeferToSpanScan
+    31.13s  5.55% 51.76%     31.13s  5.55%  runtime.spanClass.sizeclass (inline)
+    19.38s  3.46% 55.21%     87.66s 15.63%  runtime.scanObject
+    14.94s  2.66% 57.88%     14.99s  2.67%  github.com/mattn/go-runewidth.(*Condition).RuneWidth
+    12.64s  2.25% 60.13%     29.68s  5.29%  github.com/muesli/reflow/ansi.PrintableRuneWidth
+    10.92s  1.95% 62.08%     53.57s  9.55%  runtime.bulkBarrierPreWrite
+     9.37s  1.67% 63.75%      9.37s  1.67%  runtime.tgkill
+     8.67s  1.55% 65.29%      8.67s  1.55%  runtime.typePointers.nextFast (inline)
+     8.38s  1.49% 66.79%      8.38s  1.49%  runtime.procyieldAsm
+     7.73s  1.38% 68.17%     11.38s  2.03%  runtime.typePointers.next
+     6.85s  1.22% 69.39%      8.40s  1.50%  runtime.findObject
+     6.26s  1.12% 70.50%      6.41s  1.14%  runtime.(*mspan).moveInlineMarks
+     5.98s  1.07% 71.57%      5.98s  1.07%  runtime.usleep
+     5.48s  0.98% 72.55%     36.83s  6.57%  runtime.(*wbBuf).get2 (inline)
+     5.07s   0.9% 73.45%      8.01s  1.43%  github.com/charmbracelet/x/ansi.stringWidth
+     4.68s  0.83% 74.29%     18.65s  3.33%  runtime.sweepone
+     4.22s  0.75% 75.04%      4.22s  0.75%  runtime.osyield
+     4.11s  0.73% 75.77%      4.11s  0.73%  runtime.madvise
+     3.57s  0.64% 76.41%     32.50s  5.80%  runtime.wbBufFlush1
+     2.96s  0.53% 76.94%     39.61s  7.06%  github.com/muesli/reflow/wordwrap.(*WordWrap).Write
+     2.93s  0.52% 77.46%      5.77s  1.03%  runtime.scanblock
+     2.89s  0.52% 77.97%      2.93s  0.52%  github.com/charmbracelet/x/ansi/parser.TransitionTable.Transition (inline)
+     2.46s  0.44% 78.41%     17.45s  3.11%  github.com/mattn/go-runewidth.RuneWidth (inline)
+     2.35s  0.42% 78.83%      3.41s  0.61%  runtime.heapArenaOf (inline)
+     2.33s  0.42% 79.25%      3.31s  0.59%  charm.land/lipgloss/v2.Style.isBorderStyleSetWithoutSides
+     2.32s  0.41% 79.66%     13.25s  2.36%  runtime.(*sweepLocked).sweep
+     1.76s  0.31% 79.97%      4.43s  0.79%  bytes.(*Buffer).String (inline)
+     1.74s  0.31% 80.28%      3.26s  0.58%  runtime.(*spanSet).push
+     1.68s   0.3% 80.58%     12.14s  2.16%  charm.land/lipgloss/v2.Style.Render
+     1.67s   0.3% 80.88%      6.38s  1.14%  github.com/muesli/reflow/wrap.(*Wrap).Write
+     1.51s  0.27% 81.15%      3.72s  0.66%  runtime.(*spanSet).pop
+     1.49s  0.27% 81.42%    314.08s 56.00%  github.com/dubeyKartikay/peacock/internal/tui.model.Update
+     1.44s  0.26% 81.67%      3.58s  0.64%  runtime.scanObjectsSmall
+     1.43s  0.25% 81.93%      3.01s  0.54%  bytes.(*Buffer).WriteByte
+     1.35s  0.24% 82.17%     71.61s 12.77%  github.com/dubeyKartikay/peacock/internal/tui.(*model).contentLines
+     1.26s  0.22% 82.39%      3.88s  0.69%  runtime.greyobject
+     1.24s  0.22% 82.61%      8.94s  1.59%  runtime.stealWork
+     1.16s  0.21% 82.82%     85.32s 15.21%  github.com/dubeyKartikay/peacock/internal/tui.(*model).syncViewport
+     1.01s  0.18% 83.00%     68.35s 12.19%  github.com/dubeyKartikay/peacock/internal/tui.styles.renderEntry
+     0.93s  0.17% 83.17%      4.13s  0.74%  strings.genSplit
+     0.91s  0.16% 83.33%      5.16s  0.92%  runtime.slicebytetostring
+     0.89s  0.16% 83.49%      6.21s  1.11%  runtime.(*mcentral).cacheSpan
+     0.85s  0.15% 83.64%    106.52s 18.99%  runtime.mallocgc
+     0.81s  0.14% 83.78%    327.03s 58.31%  charm.land/bubbletea/v2.(*Program).eventLoop
+     0.68s  0.12% 83.91%     27.80s  4.96%  runtime.findRunnable
+     0.60s  0.11% 84.01%     11.73s  2.09%  runtime.selectgo
+     0.58s   0.1% 84.12%      6.66s  1.19%  runtime.runqgrab
+     0.57s   0.1% 84.22%      3.54s  0.63%  runtime.(*mcache).releaseAll
+     0.57s   0.1% 84.32%      6.48s  1.16%  runtime.mallocgcSmallNoscan
+     0.56s   0.1% 84.42%    123.56s 22.03%  runtime.gcDrain
+     0.56s   0.1% 84.52%    195.39s 34.84%  runtime.systemstack
+     0.54s 0.096% 84.62%      3.52s  0.63%  bytes.(*Buffer).WriteRune
+     0.51s 0.091% 84.71%      3.04s  0.54%  runtime.lock2
+     0.43s 0.077% 84.78%      9.78s  1.74%  encoding/json.(*decodeState).object
+     0.38s 0.068% 84.85%      5.27s  0.94%  runtime.mallocgcSmallScanNoHeader
+     0.36s 0.064% 84.91%     19.59s  3.49%  runtime.suspendG
+     0.33s 0.059% 84.97%      7.99s  1.42%  runtime.notesleep
+     0.32s 0.057% 85.03%     87.53s 15.61%  runtime.growslice
+     0.30s 0.053% 85.08%      3.35s   0.6%  strings.(*Builder).WriteString (inline)
+     0.28s  0.05% 85.13%     12.49s  2.23%  github.com/dubeyKartikay/peacock/internal/tui.styles.renderPart
+     0.27s 0.048% 85.18%      7.31s  1.30%  runtime.(*mcache).refill
+     0.26s 0.046% 85.23%      6.09s  1.09%  github.com/dubeyKartikay/peacock/internal/logs.extractContext
+     0.24s 0.043% 85.27%      4.69s  0.84%  runtime.scanSpan
+     0.23s 0.041% 85.31%      2.87s  0.51%  charm.land/bubbles/v2/viewport.(*Model).GotoBottom
+     0.22s 0.039% 85.35%      3.02s  0.54%  charm.land/lipgloss/v2.Style.GetHorizontalBorderSize
+     0.22s 0.039% 85.39%      3.29s  0.59%  charm.land/lipgloss/v2.Style.GetVerticalBorderSize
+     0.21s 0.037% 85.43%      3.07s  0.55%  charm.land/lipgloss/v2.Style.GetVerticalFrameSize
+     0.20s 0.036% 85.46%     10.05s  1.79%  runtime.futexsleep
+     0.20s 0.036% 85.50%      5.01s  0.89%  runtime.makeslice
+     0.20s 0.036% 85.54%     42.11s  7.51%  runtime.schedule
+     0.18s 0.032% 85.57%     26.58s  4.74%  github.com/dubeyKartikay/peacock/internal/logs.ParseLine
+     0.18s 0.032% 85.60%     30.50s  5.44%  runtime.markroot
+     0.17s  0.03% 85.63%      8.93s  1.59%  charm.land/bubbles/v2/viewport.(*Model).SetContentLines
+     0.16s 0.029% 85.66%     27.91s  4.98%  github.com/dubeyKartikay/peacock/internal/app.Run.func1
+     0.15s 0.027% 85.69%      3.80s  0.68%  charm.land/lipgloss/v2.getLines
+     0.15s 0.027% 85.71%     36.97s  6.59%  runtime.mcall
+     0.14s 0.025% 85.74%      7.82s  1.39%  runtime.(*mcache).nextFree
+     0.14s 0.025% 85.76%      6.80s  1.21%  runtime.runqsteal
+     0.14s 0.025% 85.79%     29.56s  5.27%  runtime.wakep
+     0.14s 0.025% 85.81%     32.32s  5.76%  runtime.wbBufFlush
+     0.13s 0.023% 85.84%      5.63s  1.00%  runtime.forEachPInternal
+     0.13s 0.023% 85.86%      6.01s  1.07%  runtime.scanstack
+     0.12s 0.021% 85.88%      2.93s  0.52%  reflect.Value.SetMapIndex
+     0.12s 0.021% 85.90%      4.49s   0.8%  runtime.mallocgcSmallScanHeader
+     0.11s  0.02% 85.92%      6.44s  1.15%  charm.land/lipgloss/v2.JoinHorizontal
+     0.11s  0.02% 85.94%      3.70s  0.66%  runtime.(*gcControllerState).enlistWorker
+     0.11s  0.02% 85.96%     18.82s  3.36%  runtime.bgsweep
+     0.11s  0.02% 85.98%      8.11s  1.45%  runtime.mPark (inline)
+     0.11s  0.02% 86.00%      6.03s  1.08%  runtime.newobject
+     0.11s  0.02% 86.02%     32.10s  5.72%  runtime.wbBufFlush.func1
+     0.10s 0.018% 86.04%      3.81s  0.68%  github.com/dubeyKartikay/peacock/internal/logs.stringifyValue
+     0.10s 0.018% 86.05%     10.59s  1.89%  runtime.signalM
+     0.09s 0.016% 86.07%      3.81s  0.68%  runtime.(*mcache).prepareForSweep
+     0.08s 0.014% 86.08%      3.36s   0.6%  encoding/json.Marshal
+     0.08s 0.014% 86.10%     35.96s  6.41%  runtime.notewakeup
+     0.07s 0.012% 86.11%      9.86s  1.76%  encoding/json.(*decodeState).value
+     0.07s 0.012% 86.12%      3.17s  0.57%  runtime.(*mheap).allocSpan
+     0.07s 0.012% 86.14%      6.79s  1.21%  runtime.gcStart
+     0.07s 0.012% 86.15%      6.53s  1.16%  runtime.startTheWorldWithSema
+     0.07s 0.012% 86.16%     10.21s  1.82%  runtime.stopm
+     0.06s 0.011% 86.17%     36.96s  6.59%  runtime.futexwakeup
+     0.05s 0.0089% 86.18%    223.84s 39.91%  github.com/dubeyKartikay/peacock/internal/tui.model.appendEntry (inline)
+     0.05s 0.0089% 86.19%      3.48s  0.62%  runtime.(*mcentral).uncacheSpan
+     0.05s 0.0089% 86.20%      3.92s   0.7%  runtime.(*mheap).alloc
+     0.05s 0.0089% 86.21%      3.50s  0.62%  runtime.convT
+     0.05s 0.0089% 86.22%      5.54s  0.99%  runtime.deductAssistCredit
+     0.05s 0.0089% 86.23%      5.44s  0.97%  runtime.gcAssistAlloc
+     0.05s 0.0089% 86.23%      5.13s  0.91%  runtime.gcDrainN
+     0.05s 0.0089% 86.24%     36.22s  6.46%  runtime.park_m
+     0.04s 0.0071% 86.25%      3.84s  0.68%  runtime.(*mheap).alloc.func1
+     0.04s 0.0071% 86.26%      5.43s  0.97%  runtime.gcMarkTermination
+     0.04s 0.0071% 86.26%      3.09s  0.55%  runtime.lock (inline)
+     0.04s 0.0071% 86.27%     74.65s 13.31%  runtime.memclrNoHeapPointersChunked
+     0.04s 0.0071% 86.28%      9.50s  1.69%  runtime.newstack
+     0.03s 0.0053% 86.28%     12.82s  2.29%  encoding/json.(*Decoder).Decode
+     0.03s 0.0053% 86.29%      4.27s  0.76%  runtime.(*pageAlloc).scavengeOne
+     0.03s 0.0053% 86.30%     82.73s 14.75%  runtime.mallocgcLarge
+     0.03s 0.0053% 86.30%      8.41s  1.50%  runtime.procyield (inline)
+     0.03s 0.0053% 86.31%    141.14s 25.17%  runtime.typedslicecopy
+     0.02s 0.0036% 86.31%      8.03s  1.43%  github.com/charmbracelet/x/ansi.StringWidth (inline)
+     0.02s 0.0036% 86.31%     33.13s  5.91%  github.com/muesli/reflow/ansi.Buffer.PrintableRuneWidth (inline)
+     0.02s 0.0036% 86.32%      4.31s  0.77%  runtime.(*scavengerState).run
+     0.02s 0.0036% 86.32%    133.23s 23.76%  runtime.gcBgMarkWorker
+     0.02s 0.0036% 86.32%      9.75s  1.74%  runtime.goschedImpl
+     0.02s 0.0036% 86.33%      4.35s  0.78%  runtime.runSafePointFn
+     0.02s 0.0036% 86.33%     10.07s  1.80%  runtime.send.goready.func1
+     0.01s 0.0018% 86.33%     10.03s  1.79%  encoding/json.(*decodeState).unmarshal
+     0.01s 0.0018% 86.33%     39.65s  7.07%  github.com/muesli/reflow/wordwrap.Bytes
+     0.01s 0.0018% 86.34%     39.77s  7.09%  github.com/muesli/reflow/wordwrap.String (inline)
+     0.01s 0.0018% 86.34%      6.78s  1.21%  github.com/muesli/reflow/wrap.String (inline)
+     0.01s 0.0018% 86.34%      4.28s  0.76%  runtime.(*pageAlloc).scavenge
+     0.01s 0.0018% 86.34%      4.37s  0.78%  runtime.bgscavenge
+     0.01s 0.0018% 86.34%      5.69s  1.01%  runtime.forEachP (inline)
+     0.01s 0.0018% 86.34%      5.25s  0.94%  runtime.gcAssistAlloc.func2
+     0.01s 0.0018% 86.35%      5.24s  0.93%  runtime.gcAssistAlloc1
+     0.01s 0.0018% 86.35%    123.65s 22.05%  runtime.gcBgMarkWorker.func2
+     0.01s 0.0018% 86.35%      9.37s  1.67%  runtime.gcMarkDone
+     0.01s 0.0018% 86.35%      3.05s  0.54%  runtime.lockWithRank (inline)
+     0.01s 0.0018% 86.35%      9.26s  1.65%  runtime.morestack
+     0.01s 0.0018% 86.36%     10.43s  1.86%  runtime.ready
+     0.01s 0.0018% 86.36%     12.09s  2.16%  runtime.resetspinning
+     0.01s 0.0018% 86.36%     10.16s  1.81%  runtime.send
+     0.01s 0.0018% 86.36%     28.39s  5.06%  runtime.startm
+     0.01s 0.0018% 86.36%      4.12s  0.73%  runtime.sysUnused (inline)
+     0.01s 0.0018% 86.36%      4.14s  0.74%  strings.Split (inline)
+         0     0% 86.36%    327.03s 58.31%  charm.land/bubbletea/v2.(*Program).Run
+         0     0% 86.36%    327.03s 58.31%  github.com/dubeyKartikay/peacock/internal/app.Run
+         0     0% 86.36%    327.03s 58.31%  github.com/dubeyKartikay/peacock/internal/cli.Execute
+         0     0% 86.36%    327.03s 58.31%  github.com/dubeyKartikay/peacock/internal/cli.NewRootCommand.func1
+         0     0% 86.36%     50.06s  8.93%  github.com/dubeyKartikay/peacock/internal/logs.WrapHorizontalOverflow
+         0     0% 86.36%     47.34s  8.44%  github.com/dubeyKartikay/peacock/internal/logs.wrapString
+         0     0% 86.36%      6.38s  1.14%  github.com/muesli/reflow/wrap.Bytes
+         0     0% 86.36%    327.03s 58.31%  github.com/spf13/cobra.(*Command).Execute (inline)
+         0     0% 86.36%    327.03s 58.31%  github.com/spf13/cobra.(*Command).ExecuteC
+         0     0% 86.36%    327.03s 58.31%  github.com/spf13/cobra.(*Command).execute
+         0     0% 86.36%    327.03s 58.31%  main.main
+         0     0% 86.36%      3.43s  0.61%  runtime.(*mcentral).grow
+         0     0% 86.36%      4.27s  0.76%  runtime.(*pageAlloc).scavenge.func1
+         0     0% 86.36%      4.29s  0.76%  runtime.(*scavengerState).init.func2
+         0     0% 86.36%    116.01s 20.69%  runtime.gcDrainMarkWorkerDedicated (inline)
+         0     0% 86.36%      7.55s  1.35%  runtime.gcDrainMarkWorkerIdle (inline)
+         0     0% 86.36%      2.93s  0.52%  runtime.gcMarkDone.forEachP.func5
+         0     0% 86.36%      4.19s  0.75%  runtime.gcStart.func4
+         0     0% 86.36%      9.31s  1.66%  runtime.gopreempt_m (inline)
+         0     0% 86.36%     10.34s  1.84%  runtime.goready (inline)
+         0     0% 86.36%    327.03s 58.31%  runtime.main
+         0     0% 86.36%     25.66s  4.58%  runtime.markroot.func1
+         0     0% 86.36%      4.34s  0.77%  runtime.markrootBlock
+         0     0% 86.36%     10.61s  1.89%  runtime.preemptM (inline)
+         0     0% 86.36%      4.11s  0.73%  runtime.sysUnusedOS
+         0     0% 86.36%      3.83s  0.68%  strings.NewReader (inline)

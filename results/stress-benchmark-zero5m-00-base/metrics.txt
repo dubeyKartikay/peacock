@@ -1,0 +1,14 @@
+started_at_epoch=1779649627
+rate=50000
+duration=5m
+stop_after=5m
+seed=1
+benchmark_name=zero5m-00-base
+elapsed_ms=300771
+processed_lines=2735
+throughput_lines_per_second=9
+benchmark_exit_status=0
+benchmark_status=exited
+tty_log=/home/kartikay_dubey/repos/peacock/results/stress-benchmark-zero5m-00-base/peacock.tty.log
+cpu_profile=/home/kartikay_dubey/repos/peacock/results/stress-benchmark-zero5m-00-base/peacock.cpu.prof
+pprof_text=/home/kartikay_dubey/repos/peacock/results/stress-benchmark-zero5m-00-base/peacock.pprof.txt

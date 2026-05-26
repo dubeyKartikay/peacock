@@ -1,0 +1,14 @@
+started_at_epoch=1779651138
+rate=50000
+duration=5m
+stop_after=5m
+seed=1
+benchmark_name=zero5m-05-ring-buffer
+elapsed_ms=300067
+processed_lines=1829171
+throughput_lines_per_second=6095
+benchmark_exit_status=141
+benchmark_status=exited
+tty_log=/home/kartikay_dubey/repos/peacock/results/stress-benchmark-zero5m-05-ring-buffer/peacock.tty.log
+cpu_profile=/home/kartikay_dubey/repos/peacock/results/stress-benchmark-zero5m-05-ring-buffer/peacock.cpu.prof
+pprof_text=/home/kartikay_dubey/repos/peacock/results/stress-benchmark-zero5m-05-ring-buffer/peacock.pprof.txt
