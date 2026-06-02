@@ -96,8 +96,7 @@ func (m model) filteredEntries(limit int) []*logs.Entry {
 	}
 
 	m.inBufferEntries.ReverseRange(func(entry *logs.Entry) bool {
-
-		if limit <= 0 || len(filtered) >= limit-1 {
+		if limit > 0 && len(filtered) >= limit {
 			return false
 		}
 		for _, filter := range m.filters {
@@ -125,9 +124,8 @@ func (m *model) contentLines(limit int) []string {
 	return lines
 }
 
-
 func (m model) liveEntryLimit() int {
-	if(m.paused){
+	if m.paused {
 		return m.inBufferEntries.Len()
 	}
 	return max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
