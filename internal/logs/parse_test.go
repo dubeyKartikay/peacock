@@ -56,3 +56,44 @@ func TestParseLineSupportsAliasesAndRawFallback(t *testing.T) {
 		t.Fatalf("unexpected raw line %q", raw.Raw)
 	}
 }
+
+func TestParseLineNormalizesRealisticLevelVariants(t *testing.T) {
+	tests := []struct {
+		name string
+		line string
+		want string
+	}{
+		{
+			name: "uppercase error",
+			line: `{"level":"ERROR","message":"database timeout"}`,
+			want: "error",
+		},
+		{
+			name: "warning alias",
+			line: `{"level":"warning","message":"slow request"}`,
+			want: "warn",
+		},
+		{
+			name: "padded debug",
+			line: `{"level":" debug ","message":"cache hit"}`,
+			want: "debug",
+		},
+		{
+			name: "custom level",
+			line: `{"level":"notice","message":"deploy complete"}`,
+			want: "NOTICE",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			entry := ParseLine(tt.line)
+			if !entry.Parsed {
+				t.Fatal("expected log line to parse")
+			}
+			if entry.Level.Text != tt.want {
+				t.Fatalf("expected normalized level %q, got %q", tt.want, entry.Level.Text)
+			}
+		})
+	}
+}

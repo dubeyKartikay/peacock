@@ -23,15 +23,19 @@ func RegisterFlags(flagSet *flag.FlagSet) {
 
 func ReadFlags(cfg *Config, flagSet *flag.FlagSet) (string, bool) {
 
-	fileFollow, err := flagSet.GetBool(followFlagName)
-	if err != nil {
-		fileFollow = false
+	if flagSet.Changed(followFlagName) {
+		fileFollow, err := flagSet.GetBool(followFlagName)
+		if err != nil {
+			fileFollow = false
+		}
+		cfg.Source.FileFollow = fileFollow
 	}
-	numberOfLines, err := flagSet.GetInt(numberOfLinesFlagName)
-	if err != nil {
-		numberOfLines = defaultFileTailLines
+	if flagSet.Changed(numberOfLinesFlagName) {
+		numberOfLines, err := flagSet.GetInt(numberOfLinesFlagName)
+		if err != nil {
+			numberOfLines = defaultFileTailLines
+		}
+		cfg.Source.FileTailLines = numberOfLines
 	}
-	cfg.Source.FileFollow = fileFollow
-	cfg.Source.FileTailLines = numberOfLines
 	return "", false
 }

@@ -9,21 +9,28 @@ import (
 	appconfig "github.com/dubeyKartikay/peacock/internal/config"
 )
 
-func TestTailedFileSourceReceivesAppendedLines(t *testing.T) {
+func TestTailedFileSourceReadsConfiguredExistingLinesThenAppendedLines(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "app.log")
-	if err := os.WriteFile(path, []byte("existing\n"), 0o600); err != nil {
+	if err := os.WriteFile(path, []byte("one\ntwo\nthree\n"), 0o600); err != nil {
 		t.Fatalf("write seed log: %v", err)
 	}
 
 	cfg := appconfig.DefaultConfig()
 	cfg.Source.FilePoll = true
-	cfg.Source.FileTailLines = 0
+	cfg.Source.FileTailLines = 2
 	src, err := NewTailedFileSource(path, cfg.Source)
 	if err != nil {
 		t.Fatalf("new tailed file source: %v", err)
 	}
 	defer src.Close()
+
+	if got := nextLine(t, src.Events()); got != "two" {
+		t.Fatalf("expected first existing tailed line, got %q", got)
+	}
+	if got := nextLine(t, src.Events()); got != "three" {
+		t.Fatalf("expected second existing tailed line, got %q", got)
+	}
 
 	file, err := os.OpenFile(path, os.O_APPEND|os.O_WRONLY, 0)
 	if err != nil {
@@ -66,6 +73,30 @@ func TestFileSourceReadsOnlyLastConfiguredLinesWithoutFollow(t *testing.T) {
 	expectDone(t, src.Events())
 }
 
+func TestFileSourceHandlesMissingTrailingNewlineAndShortFiles(t *testing.T) {
+	dir := t.TempDir()
+	path := filepath.Join(dir, "app.log")
+	if err := os.WriteFile(path, []byte("one\ntwo\nthree"), 0o600); err != nil {
+		t.Fatalf("write seed log: %v", err)
+	}
+
+	cfg := appconfig.DefaultConfig()
+	cfg.Source.FileTailLines = 10
+
+	src, err := NewFileSource(path, cfg.Source)
+	if err != nil {
+		t.Fatalf("new file source: %v", err)
+	}
+	defer src.Close()
+
+	for _, want := range []string{"one", "two", "three"} {
+		if got := nextLine(t, src.Events()); got != want {
+			t.Fatalf("expected line %q, got %q", want, got)
+		}
+	}
+	expectDone(t, src.Events())
+}
+
 func nextLine(t *testing.T, events <-chan Event) string {
 	t.Helper()
 
@@ -85,6 +116,32 @@ func nextLine(t *testing.T, events <-chan Event) string {
 				return *event.Line
 			case event.Err != nil:
 				t.Fatalf("unexpected source error: %v", event.Err)
+			}
+		}
+	}
+}
+
+func nextError(t *testing.T, events <-chan Event) error {
+	t.Helper()
+
+	timer := time.NewTimer(3 * time.Second)
+	defer timer.Stop()
+
+	for {
+		select {
+		case <-timer.C:
+			t.Fatal("timed out waiting for error event")
+		case event, ok := <-events:
+			if !ok {
+				t.Fatal("event stream closed before delivering error")
+			}
+			switch {
+			case event.Err != nil:
+				return event.Err
+			case event.Line != nil:
+				t.Fatalf("unexpected line before error %q", *event.Line)
+			case event.Done:
+				t.Fatal("unexpected done event before error")
 			}
 		}
 	}

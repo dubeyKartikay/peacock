@@ -42,7 +42,7 @@ func ParseLine(line string) Entry {
 	entry.Parsed = true
 	entry.Level = Part{
 		Kind: PartLevel,
-		Text: extractString(payload, levelKeys...),
+		Text: normalizeLevel(extractString(payload, levelKeys...)),
 	}
 	entry.Timestamp = Part{
 		Kind: PartTimestamp,
