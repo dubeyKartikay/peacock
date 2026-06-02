@@ -3,6 +3,7 @@ package cli
 import (
 	"fmt"
 	"os"
+	"runtime/pprof"
 
 	"github.com/spf13/cobra"
 
@@ -20,6 +21,8 @@ const (
 	followFlagName      = "follow"
 	followFlagShorthand = "f"
 	followFlagUsage     = "Follow appended lines in file mode"
+	cpuProfileFlagName  = "cpuprofile"
+	cpuProfileFlagUsage = "Write CPU profile to this file"
 )
 
 func Execute(stdin *os.File) error {
@@ -28,6 +31,7 @@ func Execute(stdin *os.File) error {
 
 func NewRootCommand(stdin *os.File) *cobra.Command {
 	var configPath string
+	var cpuProfilePath string
 
 	cmd := &cobra.Command{
 		Use:          rootUse,
@@ -35,6 +39,18 @@ func NewRootCommand(stdin *os.File) *cobra.Command {
 		Args:         cobra.MaximumNArgs(1),
 		SilenceUsage: false,
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if cpuProfilePath != "" {
+				f, err := os.Create(cpuProfilePath)
+				if err != nil {
+					return fmt.Errorf("create cpu profile: %w", err)
+				}
+				defer f.Close()
+				if err := pprof.StartCPUProfile(f); err != nil {
+					return fmt.Errorf("start cpu profile: %w", err)
+				}
+				defer pprof.StopCPUProfile()
+			}
+
 			v, err := appconfig.NewViper(configPath, "")
 			if err != nil {
 				return err
@@ -64,6 +80,7 @@ func NewRootCommand(stdin *os.File) *cobra.Command {
 	}
 
 	cmd.Flags().StringVar(&configPath, appconfig.FlagConfig, "", configFlagUsage)
+	cmd.Flags().StringVar(&cpuProfilePath, cpuProfileFlagName, "", cpuProfileFlagUsage)
 	appconfig.RegisterFlags(cmd.Flags())
 
 	cmd.AddCommand(&cobra.Command{
