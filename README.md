@@ -51,6 +51,8 @@ go install github.com/dubeyKartikay/peacock/cmd/peacock@latest
 
 ```sh
 # Extract the archive (replace filename with your platform's download)
+
+> 📈 **Writeup:** [Making a Log Viewer 12× Faster — a Go `pprof` case study](https://dubeykartikay.com/posts/go-optimization-pprof/) (52 → 651 lines/sec)
 tar -xzf peacock_Linux_x86_64.tar.gz
 
 # Check where your PATH installs binaries
