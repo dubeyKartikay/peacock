@@ -3,6 +3,7 @@ package config
 import (
 	"path/filepath"
 	"testing"
+	"time"
 )
 
 const (
@@ -167,5 +168,53 @@ func TestLoadReadsEnvironmentWithoutConfigFile(t *testing.T) {
 	}
 	if cfg.Theme.StatusBG != "240" {
 		t.Fatalf("expected status bg 240, got %q", cfg.Theme.StatusBG)
+	}
+}
+
+func TestLoadBatchSettingsFromFileAndEnvironment(t *testing.T) {
+	configPath := filepath.Join(t.TempDir(), testConfigFilename)
+	writeConfigFile(t, configPath, `
+input:
+  batch_max_entries: 42
+  batch_interval: 25ms
+`)
+	v, err := NewViper(configPath, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := Load(v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Input.BatchMaxEntries != 42 || cfg.Input.BatchInterval != 25*time.Millisecond {
+		t.Fatalf("unexpected batch settings from file: %+v", cfg.Input)
+	}
+	t.Setenv("PEACOCK_INPUT_BATCH_MAX_ENTRIES", "7")
+	t.Setenv("PEACOCK_INPUT_BATCH_INTERVAL", "10ms")
+	cfg, err = Load(v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if cfg.Input.BatchMaxEntries != 7 || cfg.Input.BatchInterval != 10*time.Millisecond {
+		t.Fatalf("expected environment to override batch settings: %+v", cfg.Input)
+	}
+}
+
+func TestLoadRejectsInvalidBatchSettings(t *testing.T) {
+	for _, setting := range []string{
+		"batch_max_entries: 0", "batch_max_entries: -1",
+		"batch_interval: 0s", "batch_interval: -1ms", "batch_interval: invalid",
+	} {
+		t.Run(setting, func(t *testing.T) {
+			configPath := filepath.Join(t.TempDir(), testConfigFilename)
+			writeConfigFile(t, configPath, "input:\n  "+setting+"\n")
+			v, err := NewViper(configPath, "")
+			if err != nil {
+				t.Fatal(err)
+			}
+			if _, err := Load(v); err == nil {
+				t.Fatal("expected invalid batch settings to fail")
+			}
+		})
 	}
 }

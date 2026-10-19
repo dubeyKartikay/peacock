@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 const (
@@ -15,6 +16,8 @@ const (
 	FlagConfig = "config"
 
 	defaultMaxEntries                = 5000
+	defaultBatchMaxEntries           = 256
+	defaultBatchInterval             = 33 * time.Millisecond
 	defaultFilterPrompt              = "/ "
 	defaultFilterPlaceholder         = "filter logs"
 	defaultFilterCharLimit           = 256

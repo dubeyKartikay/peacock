@@ -2,6 +2,7 @@ package tui
 
 import (
 	"strings"
+
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
 )
@@ -19,6 +20,10 @@ const (
 )
 
 func (m model) View() tea.View {
+	return m.cachedView
+}
+
+func (m model) renderView() tea.View {
 	if m.width == 0 || m.height == 0 {
 		return tea.View{Content: loadingText}
 	}

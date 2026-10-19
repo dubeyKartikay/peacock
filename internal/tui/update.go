@@ -1,6 +1,8 @@
 package tui
 
 import (
+	"time"
+
 	tea "charm.land/bubbletea/v2"
 	"github.com/dubeyKartikay/peacock/internal/logs"
 )
@@ -14,44 +16,89 @@ const (
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 		m.height = msg.Height
 		m.syncViewport(!m.paused)
-		return m, nil
 	case EntryMsg:
-		if m.paused {
-			m = m.queueEntry(msg.Entry)
-			return m, nil
+		return m.queueEntries([]logs.Entry{msg.Entry})
+	case EntriesMsg:
+		if len(msg.Entries) == 0 && msg.Err == nil && !msg.Done {
+			return m, m.retrySourceRead()
+		}
+		m, cmd = m.queueEntries(msg.Entries)
+		if !msg.Done && msg.Err == nil {
+			return m, tea.Batch(cmd, m.readSource)
+		}
+		if msg.Err != nil {
+			m.sourceErr = msg.Err
+		}
+		if !m.paused {
+			m.syncViewport(true)
+		}
+		if msg.Done {
+			m.sourceDone = true
+			if !m.cfg.Source.FileFollow {
+				cmd = tea.Quit
+			}
 		} else {
-			m = m.appendEntry(msg.Entry)
+			cmd = tea.Batch(cmd, m.readSource)
+		}
+	case flushTickMsg:
+		m.flushScheduled = false
+		if m.queuedEntries.Len() == 0 || m.paused {
+			return m, nil
 		}
 		m.syncViewport(true)
-		return m, nil
 	case SourceErrMsg:
 		m.sourceErr = msg.Err
-		return m, nil
 	case SourceDoneMsg:
 		m.sourceDone = true
-		if !m.cfg.Source.FileFollow {
+		if !m.paused {
 			m.syncViewport(true)
+		}
+		if !m.cfg.Source.FileFollow {
+			cmd = tea.Quit
+		}
+	case tea.KeyPressMsg:
+		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
-		return m, nil
-	case tea.KeyPressMsg:
-		return m.handleKey(msg)
+		m, cmd = m.handleKey(msg)
+	default:
+		m.viewport, cmd = m.viewport.Update(msg)
 	}
-	var cmd tea.Cmd
-	m.viewport, cmd = m.viewport.Update(msg)
+	m.cachedView = m.renderView()
 	return m, cmd
 }
 
-func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
-	if msg.String() == "ctrl+c" {
-		return m, tea.Quit
+func (m model) retrySourceRead() tea.Cmd {
+	if m.readSource == nil {
+		return nil
 	}
+	readSource := m.readSource
+	return tea.Tick(m.cfg.Input.BatchInterval, func(time.Time) tea.Msg {
+		return readSource()
+	})
+}
 
+func (m model) queueEntries(entries []logs.Entry) (model, tea.Cmd) {
+	if len(entries) == 0 {
+		return m, nil
+	}
+	m.queuedEntries.AppendBatch(entries)
+	if m.paused || m.flushScheduled {
+		return m, nil
+	}
+	m.flushScheduled = true
+	return m, tea.Tick(m.cfg.Input.BatchInterval, func(time.Time) tea.Msg {
+		return flushTickMsg{}
+	})
+}
+
+func (m model) handleKey(msg tea.KeyPressMsg) (model, tea.Cmd) {
 	if m.filterActive {
 		switch msg.Code {
 		case tea.KeyEsc:
@@ -73,16 +120,10 @@ func (m model) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 	switch msg.String() {
 	case keySpaceLiteral:
-		m.paused = !m.paused
-		if m.paused {
-			m.syncViewport(true)
-			return m, nil
+		if !m.paused {
+			m.flushQueuedEntries()
 		}
-		m.queuedEntries.Range(func(entry *logs.Entry) bool {
-			m.inBufferEntries.Append(*entry)
-			return true
-		})
-		m.queuedEntries.Reset()
+		m.paused = !m.paused
 		m.syncViewport(true)
 		return m, nil
 	case keyFilterMode:

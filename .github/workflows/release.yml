@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e
+        with:
+          go-version-file: go.mod
+      - name: Check release inputs
+        env:
+          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+        run: test -n "$HOMEBREW_TAP_GITHUB_TOKEN"
+      - name: Check out Homebrew tap
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: dubeyKartikay/homebrew-peacock
+          token: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
+          path: target/homebrew-peacock
+      - name: Verify modules
+        run: go mod verify
+      - name: Test
+        run: go test -race ./... ./testdata/stress-test/...
+      - name: Vet
+        run: go vet ./... ./testdata/stress-test/...
+      - name: Install GoReleaser
+        uses: goreleaser/goreleaser-action@a4f02ab5355a589de60d917a659ce617ed19b3de
+        with:
+          version: v2.18.3
+          install-only: true
+      - name: Validate packaging
+        run: goreleaser check
+      - name: Publish
+        run: goreleaser release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Generate Homebrew formula
+        run: python3 scripts/homebrew-formula.py
+      - name: Update Homebrew tap
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          cp dist/homebrew/peacock.rb target/homebrew-peacock/peacock.rb
+          cd target/homebrew-peacock
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add peacock.rb
+          git diff --cached --quiet && exit 0
+          git commit -m "Brew formula update for peacock version ${RELEASE_TAG}"
+          git push

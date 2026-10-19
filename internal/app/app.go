@@ -1,13 +1,13 @@
 package app
 
 import (
+	"context"
 	"os"
 	"strings"
 
 	tea "charm.land/bubbletea/v2"
 
 	appconfig "github.com/dubeyKartikay/peacock/internal/config"
-	"github.com/dubeyKartikay/peacock/internal/logs"
 	"github.com/dubeyKartikay/peacock/internal/source"
 	tui "github.com/dubeyKartikay/peacock/internal/tui"
 )
@@ -25,26 +25,15 @@ func Run(options Options) error {
 	}
 	defer src.Close()
 
-	model := tui.NewModel(src.Name(), options.Config)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	readSource := readBatch(ctx, src.Events(), options.Config.Input.BatchMaxEntries)
+	model := tui.NewModel(src.Name(), options.Config, readSource)
 	programOptions := []tea.ProgramOption{}
 	if options.InputPath != "" && !options.Config.Source.FileFollow {
 		programOptions = append(programOptions, tea.WithEnvironment(nonQueryEnvironment(os.Environ())))
 	}
 	program := tea.NewProgram(model, programOptions...)
-
-	go func() {
-		for event := range src.Events() {
-			switch {
-			case event.Line != nil:
-				entry := logs.ParseLine(*event.Line)
-				program.Send(tui.EntryMsg{Entry: entry})
-			case event.Err != nil:
-				program.Send(tui.SourceErrMsg{Err: event.Err})
-			case event.Done:
-				program.Send(tui.SourceDoneMsg{})
-			}
-		}
-	}()
 
 	if _, err := program.Run(); err != nil {
 		return err

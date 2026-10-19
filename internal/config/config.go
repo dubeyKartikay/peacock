@@ -1,6 +1,9 @@
 package config
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 type Config struct {
 	Buffer BufferConfig `mapstructure:"buffer"`
@@ -14,11 +17,13 @@ type BufferConfig struct {
 }
 
 type InputConfig struct {
-	FilterPrompt              string `mapstructure:"filter_prompt"`
-	FilterPlaceholder         string `mapstructure:"filter_placeholder"`
-	FilterCharLimit           int    `mapstructure:"filter_char_limit"`
-	ScannerInitialBufferBytes int    `mapstructure:"scanner_initial_buffer_bytes"`
-	ScannerMaxBufferBytes     int    `mapstructure:"scanner_max_buffer_bytes"`
+	BatchMaxEntries           int           `mapstructure:"batch_max_entries"`
+	BatchInterval             time.Duration `mapstructure:"batch_interval"`
+	FilterPrompt              string        `mapstructure:"filter_prompt"`
+	FilterPlaceholder         string        `mapstructure:"filter_placeholder"`
+	FilterCharLimit           int           `mapstructure:"filter_char_limit"`
+	ScannerInitialBufferBytes int           `mapstructure:"scanner_initial_buffer_bytes"`
+	ScannerMaxBufferBytes     int           `mapstructure:"scanner_max_buffer_bytes"`
 }
 
 type SourceConfig struct {
@@ -56,6 +61,8 @@ func DefaultConfig() Config {
 			MaxEntries: defaultMaxEntries,
 		},
 		Input: InputConfig{
+			BatchMaxEntries:           defaultBatchMaxEntries,
+			BatchInterval:             defaultBatchInterval,
 			FilterPrompt:              defaultFilterPrompt,
 			FilterPlaceholder:         defaultFilterPlaceholder,
 			FilterCharLimit:           defaultFilterCharLimit,
@@ -94,6 +101,10 @@ func (c Config) Validate() error {
 	switch {
 	case c.Buffer.MaxEntries < 1:
 		return fmt.Errorf("buffer.max_entries must be greater than zero")
+	case c.Input.BatchMaxEntries < 1:
+		return fmt.Errorf("input.batch_max_entries must be greater than zero")
+	case c.Input.BatchInterval <= 0:
+		return fmt.Errorf("input.batch_interval must be greater than zero")
 	case c.Input.FilterCharLimit < 1:
 		return fmt.Errorf("input.filter_char_limit must be greater than zero")
 	case c.Input.ScannerInitialBufferBytes < 1:

@@ -115,7 +115,7 @@ your-app | peacock
 |-----|--------|
 | `Space` | Pause / resume live tail |
 | `/` | Enter filter mode (press `Enter` to apply) |
-| `Esc` | Clear filter and exit filter mode |
+| `Esc` | Cancel filter entry and keep active filters |
 | `Backspace` | Remove last active filter |
 | `g` | Jump to top |
 | `G` | Jump to bottom |
@@ -158,6 +158,8 @@ buffer:
   max_entries: 5000              # Max log entries to keep in memory
 
 input:
+  batch_max_entries: 256
+  batch_interval: 33ms
   filter_prompt: "/ "            # Prompt shown in filter mode
   filter_placeholder: "filter logs"
   filter_char_limit: 256
@@ -204,11 +206,57 @@ Any config key can be set via an environment variable using the `PEACOCK_` prefi
 
 ```sh
 PEACOCK_BUFFER_MAX_ENTRIES=10000       # buffer.max_entries
+PEACOCK_INPUT_BATCH_INTERVAL=50ms
 PEACOCK_THEME_LEVEL_ERROR="#ff0000"    # theme.level_error
 PEACOCK_SOURCE_FILE_POLL=false         # source.file_poll
 ```
 
 ---
+
+## Development
+
+```sh
+go test ./...
+go test ./testdata/stress-test/...
+go test -race ./...
+```
+
+The VHS UI suite generates deterministic logs and checks static files, stdin
+pipes, and followed files against recorded terminal snapshots:
+
+```sh
+brew install vhs ffmpeg
+make test-ui
+python3 scripts/test-ui-vhs.py run --rate 2000
+```
+
+Recordings, screenshots, generated tapes, and the JSON/Markdown reports are written to
+`results/vhs-ui/`. Static file mode renders and exits at EOF; the live modes
+exercise filtering, arriving logs, pause/resume, history navigation, and quitting.
+
+Bubble Tea commands read up to `input.batch_max_entries` available entries at a
+time. Pending entries are flushed into the view by `tea.Tick` after
+`input.batch_interval` (33 ms by default, roughly 30 frames per second). Empty
+reads retry after the same interval. Filter changes, pause/resume, resizing, and
+input completion flush immediately;
+ordinary typing and navigation keep pending input queued until the tick. History
+and pending entries stay bounded by `buffer.max_entries`, including while paused.
+Both batch settings must be positive; the interval accepts durations such as
+`16ms` or `50ms`.
+Ctrl+C quits immediately without flushing pending entries or rebuilding the view.
+
+To compare two built binaries on macOS or Linux:
+
+```sh
+make build
+python3 scripts/benchmark-throughput.py /path/to/baseline/peacock ./target/peacock --lines 5000 --runs 3
+```
+
+The benchmark pipes a finite, deterministic JSON stream into each viewer in a
+70×240 pseudo-terminal and waits until its final entry appears in terminal output.
+It reports JSON results and median throughput, including process startup and
+rendering. This measures burst ingestion with rolling history, rather than a
+sustained generator rate. Use `--rows`, `--cols`, and `--timeout` to vary the setup.
 
 ## Future Scope
 

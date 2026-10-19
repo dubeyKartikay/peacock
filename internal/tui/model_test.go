@@ -216,11 +216,9 @@ func TestStatusRendersStateSourceErrorsAndFilters(t *testing.T) {
 }
 
 func newSizedModel(cfg appconfig.Config) model {
-	m := NewModel("stdin", cfg).(model)
-	m.width = 80
-	m.height = 20
-	m.syncViewport(true)
-	return m
+	m := NewModel("stdin", cfg, nil).(model)
+	updated, _ := m.Update(tea.WindowSizeMsg{Width: 80, Height: 20})
+	return updated.(model)
 }
 
 func updateModel(t *testing.T, m model, msg tea.Msg) model {
@@ -271,6 +269,7 @@ func ringMessages(entries []*logs.Entry) []string {
 
 func testEntry(message string) logs.Entry {
 	return logs.Entry{
+		Raw:     message,
 		Message: logs.Part{Text: message},
 		Search:  message,
 	}

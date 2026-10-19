@@ -25,6 +25,14 @@ type EntryMsg struct {
 	Entry logs.Entry
 }
 
+type EntriesMsg struct {
+	Entries []logs.Entry
+	Err     error
+	Done    bool
+}
+
+type flushTickMsg struct{}
+
 type SourceErrMsg struct {
 	Err error
 }
@@ -46,13 +54,16 @@ type model struct {
 	queuedEntries   entryRing
 	paused          bool
 	filterActive    bool
+	readSource      tea.Cmd
+	flushScheduled  bool
+	cachedView      tea.View
 	sourceDone      bool
 	sourceErr       error
 	query           string
 	filters         Filters
 }
 
-func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
+func NewModel(sourceName string, cfg appconfig.Config, readSource tea.Cmd) tea.Model {
 	input := textinput.New()
 	input.Prompt = cfg.Input.FilterPrompt
 	input.CharLimit = cfg.Input.FilterCharLimit
@@ -70,21 +81,13 @@ func NewModel(sourceName string, cfg appconfig.Config) tea.Model {
 		styles:          defaultStyles(cfg.Theme),
 		inBufferEntries: newEntryRing(cfg.Buffer.MaxEntries),
 		queuedEntries:   newEntryRing(cfg.Buffer.MaxEntries),
+		readSource:      readSource,
+		cachedView:      tea.View{Content: loadingText},
 	}
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
-}
-
-func (m model) appendEntry(entries ...logs.Entry) model {
-	m.inBufferEntries.AppendBatch(entries)
-	return m
-}
-
-func (m model) queueEntry(entry logs.Entry) model {
-	m.queuedEntries.Append(entry)
-	return m
+	return m.readSource
 }
 
 func (m model) filteredEntries(limit int) []*logs.Entry {
@@ -131,7 +134,18 @@ func (m model) liveEntryLimit() int {
 	return max(minViewportDimension, m.height-m.styles.panel.GetVerticalFrameSize())
 }
 
+func (m *model) flushQueuedEntries() {
+	m.queuedEntries.Range(func(entry *logs.Entry) bool {
+		m.inBufferEntries.Append(*entry)
+		return true
+	})
+	m.queuedEntries.Reset()
+}
+
 func (m *model) syncViewport(stickBottom bool) {
+	if !m.paused {
+		m.flushQueuedEntries()
+	}
 	contentWidth := max(minViewportDimension, m.width-m.styles.panel.GetHorizontalFrameSize())
 	contentLimit := m.liveEntryLimit()
 	content := m.contentLines(contentLimit)
