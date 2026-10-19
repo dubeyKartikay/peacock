@@ -37,6 +37,13 @@ brew tap dubeyKartikay/peacock
 brew install peacock
 ```
 
+If Homebrew reports an untrusted tap, trust the formula and retry:
+
+```sh
+brew trust --formula dubeykartikay/peacock/peacock
+brew install peacock
+```
+
 **One-liner** (Linux & macOS) — installs the latest release to `~/.local/bin` and updates your shell config:
 
 ```sh
