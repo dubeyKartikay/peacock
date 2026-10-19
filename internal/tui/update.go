@@ -3,6 +3,7 @@ package tui
 import (
 	"time"
 
+	"charm.land/bubbles/v2/key"
 	tea "charm.land/bubbletea/v2"
 	"github.com/dubeyKartikay/peacock/internal/logs"
 )
@@ -67,6 +68,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		m, cmd = m.handleKey(msg)
+	case tea.MouseWheelMsg:
+		if msg.Button == tea.MouseWheelUp && !msg.Mod.Contains(tea.ModShift) {
+			m.pauseForScroll()
+		}
+		m.viewport, cmd = m.viewport.Update(msg)
 	default:
 		m.viewport, cmd = m.viewport.Update(msg)
 	}
@@ -98,6 +104,13 @@ func (m model) queueEntries(entries []logs.Entry) (model, tea.Cmd) {
 	})
 }
 
+func (m *model) pauseForScroll() {
+	if !m.paused {
+		m.paused = true
+		m.syncViewport(true)
+	}
+}
+
 func (m model) handleKey(msg tea.KeyPressMsg) (model, tea.Cmd) {
 	if m.filterActive {
 		switch msg.Code {
@@ -116,6 +129,10 @@ func (m model) handleKey(msg tea.KeyPressMsg) (model, tea.Cmd) {
 		var cmd tea.Cmd
 		m.filterInput, cmd = m.filterInput.Update(msg)
 		return m, cmd
+	}
+
+	if msg.String() == keyGoToTop || key.Matches(msg, m.viewport.KeyMap.Up, m.viewport.KeyMap.PageUp, m.viewport.KeyMap.HalfPageUp) {
+		m.pauseForScroll()
 	}
 
 	switch msg.String() {

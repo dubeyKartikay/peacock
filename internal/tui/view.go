@@ -40,7 +40,10 @@ func (m model) renderView() tea.View {
 		parts = append(parts, m.styles.filterBar.Render(m.filterInput.View()))
 	}
 	parts = append(parts, status)
-	return tea.View{Content: lipgloss.JoinVertical(lipgloss.Left, parts...)}
+	return tea.View{
+		Content:   lipgloss.JoinVertical(lipgloss.Left, parts...),
+		MouseMode: tea.MouseModeCellMotion,
+	}
 }
 
 func (m *model) renderStatus() string {

@@ -122,11 +122,16 @@ your-app | peacock
 | `/` | Enter filter mode (press `Enter` to apply) |
 | `Esc` | Cancel filter entry and keep active filters |
 | `Backspace` | Remove last active filter |
-| `g` | Jump to top |
+| Mouse wheel | Scroll logs; scrolling up pauses live output |
+| `Up` | Scroll up one line and pause live output |
+| `g` | Jump to top and pause live output |
 | `G` | Jump to bottom |
-| `PageUp` / `Ctrl+B` | Scroll up one page |
+| `PageUp` / `Ctrl+B` | Scroll up one page and pause live output |
 | `PageDown` / `Ctrl+F` | Scroll down one page |
 | `Ctrl+C` | Quit |
+
+Scrolling down or pressing `G` keeps the view paused. Press `Space` to resume
+live output. New logs continue to arrive in the bounded queue while paused.
 
 ---
 
@@ -244,7 +249,8 @@ time. Pending entries are flushed into the view by `tea.Tick` after
 `input.batch_interval` (33 ms by default, roughly 30 frames per second). Empty
 reads retry after the same interval. Filter changes, pause/resume, resizing, and
 input completion flush immediately;
-ordinary typing and navigation keep pending input queued until the tick. History
+ordinary typing and downward navigation keep pending input queued until the tick.
+Upward navigation pauses on the currently displayed logs. History
 and pending entries stay bounded by `buffer.max_entries`, including while paused.
 Both batch settings must be positive; the interval accepts durations such as
 `16ms` or `50ms`.

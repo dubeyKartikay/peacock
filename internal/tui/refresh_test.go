@@ -161,8 +161,8 @@ func TestQuitLeavesPendingEntriesAndDisplayedFrameUnchanged(t *testing.T) {
 
 func TestOrdinaryKeysKeepPendingEntriesQueuedUntilTick(t *testing.T) {
 	for _, key := range []tea.KeyPressMsg{
-		{Code: 'x', Text: "x"}, {Code: 'g', Text: "g"}, {Code: 'G', Text: "G"},
-		{Code: tea.KeyPgUp}, {Code: tea.KeyPgDown}, {Code: tea.KeyBackspace},
+		{Code: 'x', Text: "x"}, {Code: 'G', Text: "G"},
+		{Code: tea.KeyPgDown}, {Code: tea.KeyBackspace},
 	} {
 		t.Run(key.String(), func(t *testing.T) {
 			m := newSizedModel(appconfig.DefaultConfig())

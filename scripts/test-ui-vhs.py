@@ -88,6 +88,16 @@ class Tape:
         self.add("Wait+Screen /STATUS_0/")
         self.capture("quit")
 
+    def auto_pause(self, command, label):
+        self.add(command, "Wait+Screen /PAUSED/")
+        self.capture(label)
+        self.add("Sleep 1s")
+        self.capture(label + "-frozen")
+        self.type("G")
+        self.capture(label + "-bottom")
+        self.add("Space", "Wait+Screen /LIVE/", "Sleep 500ms")
+        self.capture(label + "-resumed")
+
     def save(self):
         path = OUTPUT / f"{self.name}.tape"
         path.write_text("\n".join(self.lines) + "\n")
@@ -142,6 +152,11 @@ def live_tape(name, rate):
     tape.capture("paused-two")
     tape.add("Space", "Wait+Screen /LIVE/", "Sleep 500ms")
     tape.capture("resumed")
+    for command, label in (
+        ("Up", "auto-up"), ("PageUp", "auto-page-up"),
+        ("Ctrl+B", "auto-ctrl-b"), ('Type "g"', "auto-top"),
+    ):
+        tape.auto_pause(command, label)
 
     tape.type("/")
     tape.add("Sleep 150ms")
@@ -154,6 +169,7 @@ def live_tape(name, rate):
     tape.capture("and-one")
     tape.add("Sleep 1s")
     tape.capture("and-two")
+    tape.auto_pause("Up", "auto-filtered")
     tape.add("Space", "Wait+Screen /PAUSED/")
     tape.capture("filtered-paused-one")
     tape.add("Sleep 1s")
@@ -238,6 +254,12 @@ def verify_live(name, frames):
     check(panel(frames["paused-one"]) == panel(frames["paused-two"]), "pause freezes displayed logs", checks)
     check(all("PAUSED" in frames[label] for label in ("paused-one", "paused-two", "filtered-paused-one", "filtered-paused-two")), "paused captures show the PAUSED state", checks)
     check(latest("resumed") > latest("paused-two"), "resume displays queued messages", checks)
+    for label in ("auto-up", "auto-page-up", "auto-ctrl-b", "auto-top", "auto-filtered"):
+        check("PAUSED" in frames[label], f"{label}: upward navigation pauses live output", checks)
+        check(panel(frames[label]) == panel(frames[label + "-frozen"]), f"{label}: incoming logs leave the scrolled view frozen", checks)
+        check("PAUSED" in frames[label + "-bottom"] and latest(label + "-bottom") >= latest(label), f"{label}: G browses the paused snapshot", checks)
+        check("LIVE" in frames[label + "-resumed"] and latest(label + "-resumed") > latest(label + "-bottom"), f"{label}: Space resumes arriving logs", checks)
+    check(all(row[1:] == ("keep", "api") for label in ("auto-filtered", "auto-filtered-frozen", "auto-filtered-bottom", "auto-filtered-resumed") for row in rows[label]), "automatic pause and resume preserve both active filters", checks)
     for label in ("filtered-one", "filtered-two", "one-filter", "eof-filtered"):
         if label in rows:
             check(bool(rows[label]) and all(row[1] == "keep" for row in rows[label]), f"{label}: only matching logs", checks)
