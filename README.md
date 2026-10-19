@@ -1,7 +1,7 @@
 > 📈 **Writeup:** [Making a Log Viewer 12× Faster — a Go `pprof` case study](https://dubeykartikay.com/posts/go-optimization-pprof/) (52 → 651 lines/sec)
 
 <div align="center">
-  <img width="500" src="./docs/assets/peacock.png" alt="Peacock logo" />
+  <img width="500" src="./assets/peacock.png" alt="Peacock logo" />
   <h1>Peacock</h1>
   <p>A charming <code>tail</code> replacement for developers</p>
   <p>
