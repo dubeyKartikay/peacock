@@ -1,7 +1,7 @@
 <div align="center">
-  <img width="500" src="./assets/peacock.png" alt="Peacock logo" />
+  <img width="260" src="./assets/peacock.png" alt="Peacock logo" />
   <h1>Peacock</h1>
-  <p>A charming <code>tail</code> replacement for developers</p>
+  <p><strong>A charming, high-throughput <code>tail -f</code> replacement for JSON logs</strong></p>
   <p>
     <a href="https://go.dev/"><img src="https://img.shields.io/github/go-mod/go-version/dubeyKartikay/peacock" alt="Go version"/></a>
     <a href="https://github.com/dubeyKartikay/peacock/releases"><img src="https://img.shields.io/github/v/release/dubeyKartikay/peacock" alt="Latest release"/></a>
@@ -11,9 +11,11 @@
   </p>
 </div>
 
-Pipe your JSON log output into peacock and get colorized, readable, filterable log streams in the terminal.
+Pipe your JSON log output into `peacock` and get colorized, readable, interactively filterable log streams in the terminal.
 
-<img max-width="500px" src="./assets/peacock_screenshot.png"/>
+<p align="center">
+  <img src="./assets/tail_vs_peacock.gif" alt="tail vs peacock demo" width="100%"/>
+</p>
 
 ```sh
 go run . | peacock
@@ -21,28 +23,36 @@ kubectl logs -f my-pod | peacock
 peacock -f app.log
 ```
 
-#### Tail vs Peacock
-<img src="./assets/tail_vs_peacock.gif" style="max-width:100%"/>
+## Why Peacock?
+
+- **Zero-config JSON formatting** — Automatically highlights levels (`ERROR`, `WARN`, `INFO`, `DEBUG`), timestamps, callers, and `key=value` context while passing non-JSON lines through untouched.
+- **Scroll up to auto-pause** — Use your mouse wheel, `Up`, or `PageUp` to inspect log history while new entries continue buffering in the background. Press `Space` to resume live tailing.
+- **Live stacked filtering** — Press `/` to filter logs on the fly, stack multiple filters to drill into noisy streams, and hit `Backspace` to pop the last filter.
+- **Built for fast streams** — Decoupled 30fps batched rendering ingests 70,000+ JSON lines/sec in a real terminal without freezing your UI.
 
 ---
 
 ## Installation
 
-**Homebrew** (Linux & macOS):
+**Homebrew** (macOS & Linux):
 
 ```sh
-brew tap dubeyKartikay/peacock
-brew install peacock
+brew install dubeyKartikay/peacock/peacock
 ```
+
+<details>
+<summary>Troubleshooting Homebrew tap trust</summary>
 
 If Homebrew reports an untrusted tap, trust the formula and retry:
 
 ```sh
+brew tap dubeyKartikay/peacock
 brew trust --formula dubeykartikay/peacock/peacock
 brew install peacock
 ```
+</details>
 
-**One-liner** (Linux & macOS) — installs the latest release to `~/.local/bin` and updates your shell config:
+**One-liner** (macOS & Linux) — installs the latest release to `~/.local/bin`:
 
 ```sh
 curl -fsSL https://raw.githubusercontent.com/dubeyKartikay/peacock/main/install.sh | bash
@@ -54,24 +64,26 @@ curl -fsSL https://raw.githubusercontent.com/dubeyKartikay/peacock/main/install.
 go install github.com/dubeyKartikay/peacock/cmd/peacock@latest
 ```
 
-**Manual** — pre-built binaries for Linux, macOS, and Windows are available on the [releases page](https://github.com/dubeyKartikay/peacock/releases).
+<details>
+<summary><strong>Manual binary install</strong> (Linux, macOS, Windows)</summary>
+
+Pre-built binaries are available on the [releases page](https://github.com/dubeyKartikay/peacock/releases).
 
 ```sh
 # Extract the archive (replace filename with your platform's download)
 tar -xzf peacock_Linux_x86_64.tar.gz
-
-# Check where your PATH installs binaries
-echo $PATH
 
 # Copy the binary to a directory on your PATH (e.g. /usr/local/bin)
 sudo cp peacock /usr/local/bin/
 
 # Verify the install
 peacock --help
-
 ```
+</details>
 
 ---
+
+## Features in Action
 
 #### Follow Logs
 <img src="./assets/follow.gif" style="max-width:100%"/>
